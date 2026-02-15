@@ -12,13 +12,28 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 import os
 from pathlib import Path
 
+
+def env_bool(name, default=False):
+    value = os.environ.get(name)
+    if value is None:
+        return default
+    return value.strip().lower() in {"1", "true", "yes", "on"}
+
+
+def env_list(name, default):
+    value = os.environ.get(name)
+    if value is None:
+        return default
+    values = [item.strip() for item in value.split(",") if item.strip()]
+    return values or default
+
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-if "CSRF_TRUSTED_ORIGINS" in os.environ:
-    CSRF_TRUSTED_ORIGINS = [os.environ["CSRF_TRUSTED_ORIGINS"]]
-else:
-    CSRF_TRUSTED_ORIGINS = ["http://127.0.0.1:21114"]
-    SECURE_CROSS_ORIGIN_OPENER_POLICY = 'None'
+CSRF_TRUSTED_ORIGINS = env_list("CSRF_TRUSTED_ORIGINS", ["http://127.0.0.1:21114"])
+SECURE_CROSS_ORIGIN_OPENER_POLICY = os.environ.get("SECURE_CROSS_ORIGIN_OPENER_POLICY", "unsafe-none")
+if SECURE_CROSS_ORIGIN_OPENER_POLICY not in {"same-origin", "same-origin-allow-popups", "unsafe-none"}:
+    SECURE_CROSS_ORIGIN_OPENER_POLICY = "unsafe-none"
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
@@ -27,9 +42,9 @@ SECRET_KEY = os.environ.get("SECRET_KEY", 'j%7yjvygpih=6b%qf!q%&ixpn+27dngzdu-i3
 # ID服务器IP或域名，一般与中继服务器，用于web client
 ID_SERVER = os.environ.get("ID_SERVER", '')
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get("DEBUG", False)
+DEBUG = env_bool("DEBUG", False)
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = env_list("ALLOWED_HOSTS", ["*"])
 AUTH_USER_MODEL = 'api.UserProfile'      # AppName.自定义user
 
 ALLOW_REGISTRATION = os.environ.get("ALLOW_REGISTRATION", "True")          # 是否允许注册, True为允许，False为不允许
@@ -66,7 +81,7 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
-    # 'django.middleware.csrf.CsrfViewMiddleware',   # 取消post的验证。
+    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',

@@ -5,6 +5,7 @@ import time
 import datetime
 # import hashlib
 import math
+import secrets
 from django.contrib import auth
 # from django.forms.models import model_to_dict
 from api.models import RustDeskToken, UserProfile, RustDeskTag, RustDeskPeer, RustDesDevice, ConnLog, FileLog
@@ -12,6 +13,7 @@ from django.db.models import Q
 import copy
 from .views_front import *
 from django.utils.translation import gettext as _
+from django.views.decorators.csrf import csrf_exempt
 
 
 def get_client_ip(request):
@@ -23,6 +25,7 @@ def get_client_ip(request):
     return ip
 
 
+@csrf_exempt
 def login(request):
     result = {}
     if request.method == 'GET':
@@ -66,7 +69,7 @@ def login(request):
     # 检查是否过期
     if token:
         now_t = datetime.datetime.now()
-        nums = (now_t - token.create_time).seconds if now_t > token.create_time else 0
+        nums = (now_t - token.create_time).total_seconds() if now_t > token.create_time else 0
         if nums >= EFFECTIVE_SECONDS:
             token.delete()
             token = None
@@ -78,7 +81,7 @@ def login(request):
             uid=user.id,
             uuid=user.uuid,
             rid=user.rid,
-            access_token=getStrMd5(str(time.time()) + salt)
+            access_token=secrets.token_urlsafe(32)
         )
         token.save()
 
@@ -88,6 +91,7 @@ def login(request):
     return JsonResponse(result)
 
 
+@csrf_exempt
 def logout(request):
     if request.method == 'GET':
         result = {'error': _('请求方式错误！')}
@@ -108,6 +112,7 @@ def logout(request):
     return JsonResponse(result)
 
 
+@csrf_exempt
 def currentUser(request):
     result = {}
     if request.method == 'GET':
@@ -132,6 +137,7 @@ def currentUser(request):
     return JsonResponse(result)
 
 
+@csrf_exempt
 def ab(request):
     '''
     '''
@@ -223,12 +229,14 @@ def ab(request):
     return JsonResponse(result)
 
 
+@csrf_exempt
 def ab_get(request):
     # 兼容 x86-sciter 版客户端，此版客户端通过访问 "POST /api/ab/get" 来获取地址簿
     request.method = 'GET'
     return ab(request)
 
 
+@csrf_exempt
 def sysinfo(request):
     # 客户端注册服务后，才会发送设备信息
     result = {}
@@ -260,6 +268,7 @@ def sysinfo(request):
     return JsonResponse(result)
 
 
+@csrf_exempt
 def heartbeat(request):
     postdata = json.loads(request.body)
     device = RustDesDevice.objects.filter(Q(rid=postdata['id']) & Q(uuid=postdata['uuid'])).first()
@@ -275,6 +284,7 @@ def heartbeat(request):
     return JsonResponse(result)
 
 
+@csrf_exempt
 def audit(request):
     postdata = json.loads(request.body)
     # print(postdata)
@@ -332,6 +342,7 @@ def convert_filesize(size_bytes):
     return "%s %s" % (s, size_name[i])
 
 
+@csrf_exempt
 def users(request):
     result = {
         'code': 1,
@@ -340,6 +351,7 @@ def users(request):
     return JsonResponse(result)
 
 
+@csrf_exempt
 def peers(request):
     result = {
         'code': 1,

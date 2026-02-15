@@ -19,6 +19,7 @@
  
     <!-- 表单选项 -->
     <form class="layui-form">
+        {% csrf_token %}
         <div class="layui-input-inline">
             <!-- 用户名 -->
             <div class="layui-inline" style="width: 85%">
@@ -124,6 +125,7 @@
                 data:{
                     user:$('#user').val(),
                     pwd:$('#pwd').val(),
+                    csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val(),
                 },
                 success:function(data){
                     if (data.code == 1) {

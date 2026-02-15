@@ -8,6 +8,7 @@
  
  
 <div class="layui-container">
+    <form id="csrf-form" style="display:none;">{% csrf_token %}</form>
     <div class="layui-card layui-col-md3-offset2">
         <div class="layui-card-header">{{ "请将要分享的机器调整到右侧" | translate }}</div>
         <div id="showdevice"></div>
@@ -83,6 +84,7 @@
             dataType:'json',
             data:{
                 data:JSON.stringify(getData),
+                csrfmiddlewaretoken:$('#csrf-form input[name=csrfmiddlewaretoken]').val(),
             },
             success:function(data){
                 if (data.code == 1) {

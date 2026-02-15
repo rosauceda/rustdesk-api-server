@@ -16,6 +16,7 @@
 <div class="login-main">
     <header class="layui-elip">{{ "登录" | translate }}</header>
     <form class="layui-form">
+        {% csrf_token %}
         <div class="layui-input-inline">
             <input type="text" name="account" required lay-verify="required" placeholder="{{ "用户名" | translate }}" autocomplete="off"
                    class="layui-input">

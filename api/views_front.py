@@ -19,6 +19,7 @@ from django.db.models import Model
 import json
 import time
 import hashlib
+import secrets
 import sys
 
 from io import BytesIO
@@ -27,6 +28,10 @@ from django.utils.translation import gettext as _
 
 salt = 'xiaomo'
 EFFECTIVE_SECONDS = 7200
+
+
+def generate_secure_token(length=32):
+    return secrets.token_urlsafe(length)
 
 
 def getStrMd5(s):
@@ -210,7 +215,7 @@ def get_single_info(uid):
         peers[rid]['memory'] = device.memory
         peers[rid]['cpu'] = device.cpu
         peers[rid]['os'] = device.os
-        peers[rid]['status'] = _('在线') if (now - device.update_time).seconds <= 120 else _('离线')
+        peers[rid]['status'] = _('在线') if (now - device.update_time).total_seconds() <= 120 else _('离线')
 
     for rid in peers.keys():
         peers[rid]['has_rhash'] = _('是') if len(peers[rid]['rhash']) > 1 else _('否')
@@ -233,7 +238,7 @@ def get_all_info():
         if not devices[rid].get('rust_user', ''):
             devices[rid]['rust_user'] = _('未登录')
     for k, v in devices.items():
-        devices[k]['status'] = _('在线') if (now - datetime.datetime.strptime(v['update_time'], '%Y-%m-%d %H:%M')).seconds <= 120 else _('离线')
+        devices[k]['status'] = _('在线') if (now - datetime.datetime.strptime(v['update_time'], '%Y-%m-%d %H:%M')).total_seconds() <= 120 else _('离线')
     return [v for k, v in devices.items()]
 
 
@@ -284,7 +289,7 @@ def check_sharelink_expired(sharelink):
     now = datetime.datetime.now()
     if sharelink.create_time > now:
         return False
-    if (now - sharelink.create_time).seconds < 15 * 60:
+    if (now - sharelink.create_time).total_seconds() < 15 * 60:
         return False
     else:
         sharelink.is_expired = True
@@ -316,12 +321,12 @@ def share(request):
             title = '成功'
             if not sharelink:
                 title = '错误'
-                msg = f'链接{url}:<br>分享链接不存在或已失效。'
+                msg = f'链接 {url}:\n分享链接不存在或已失效。'
             else:
                 sharelink = sharelink[0]
                 if str(request.user.id) == str(sharelink.uid):
                     title = '错误'
-                    msg = f'链接{url}:<br><br>咱就说，你不能把链接分享给自己吧？！'
+                    msg = f'链接 {url}:\n你不能把链接分享给自己。'
                 else:
                     sharelink.is_used = True
                     sharelink.save()
@@ -354,7 +359,7 @@ def share(request):
 
             title = _(title)
             msg = _(msg)
-            return render(request, 'msg.html', {'title': msg, 'msg': msg})
+            return render(request, 'msg.html', {'title': title, 'msg': msg})
     else:
         data = request.POST.get('data', '[]')
 
@@ -365,7 +370,7 @@ def share(request):
         rustdesk_ids = ','.join(rustdesk_ids)
         sharelink = ShareLink(
             uid=request.user.id,
-            shash=getStrMd5(str(time.time()) + salt),
+            shash=generate_secure_token(24),
             peers=rustdesk_ids,
         )
         sharelink.save()
@@ -436,15 +441,21 @@ def get_file_log():
 
 @login_required(login_url='/api/user_action?action=login')
 def conn_log(request):
+    u = UserProfile.objects.get(username=request.user)
+    if not u.is_admin:
+        return HttpResponseRedirect('/api/work')
     paginator = Paginator(get_conn_log(), 20)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-    return render(request, 'show_conn_log.html', {'page_obj': page_obj})
+    return render(request, 'show_conn_log.html', {'u': u, 'page_obj': page_obj})
 
 
 @login_required(login_url='/api/user_action?action=login')
 def file_log(request):
+    u = UserProfile.objects.get(username=request.user)
+    if not u.is_admin:
+        return HttpResponseRedirect('/api/work')
     paginator = Paginator(get_file_log(), 20)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-    return render(request, 'show_file_log.html', {'page_obj': page_obj})
+    return render(request, 'show_file_log.html', {'u': u, 'page_obj': page_obj})
