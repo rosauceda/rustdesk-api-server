@@ -316,83 +316,101 @@ def check_sharelink_expired(sharelink):
 
 @login_required(login_url='/api/user_action?action=login')
 def share(request):
-    peers = RustDeskPeer.objects.filter(Q(uid=request.user.id))
-    sharelinks = ShareLink.objects.filter(Q(uid=request.user.id) & Q(is_used=False) & Q(is_expired=False))
+    current_uid = str(request.user.id)
+    peers_qs = RustDeskPeer.objects.filter(Q(uid=current_uid))
+    sharelinks_qs = ShareLink.objects.filter(Q(uid=current_uid) & Q(is_used=False) & Q(is_expired=False))
 
     # 省资源：处理已过期请求，不主动定时任务轮询请求，在任意地方请求时，检查是否过期，过期则保存。
-    # now = datetime.datetime.now()
-    for sl in sharelinks:
+    for sl in sharelinks_qs:
         check_sharelink_expired(sl)
-    sharelinks = ShareLink.objects.filter(Q(uid=request.user.id) & Q(is_used=False) & Q(is_expired=False))
-    peers = [{'id': ix + 1, 'name': f'{p.rid}|{p.alias}'} for ix, p in enumerate(peers)]
-    sharelinks = [{'shash': s.shash, 'is_used': s.is_used, 'is_expired': s.is_expired, 'create_time': s.create_time, 'peers': s.peers} for ix, s in enumerate(sharelinks)]
+
+    sharelinks_qs = ShareLink.objects.filter(Q(uid=current_uid) & Q(is_used=False) & Q(is_expired=False))
+    peers = [{'id': ix + 1, 'name': f'{p.rid}|{p.alias}'} for ix, p in enumerate(peers_qs)]
+    sharelinks = [{'shash': s.shash, 'is_used': s.is_used, 'is_expired': s.is_expired, 'create_time': s.create_time, 'peers': s.peers} for s in sharelinks_qs]
 
     if request.method == 'GET':
-        url = request.build_absolute_uri()
-        if url.endswith('share'):
+        # Support both /api/share and /api/share/ reliably
+        normalized_path = request.path.rstrip('/')
+        if normalized_path.endswith('/share'):
             return render(request, 'share.html', {'peers': peers, 'sharelinks': sharelinks})
+
+        url = request.build_absolute_uri()
+        shash = normalized_path.split('/')[-1].strip()
+        msg = ''
+        title = '成功'
+        sharelink = ShareLink.objects.filter(Q(shash=shash)).first()
+        if not sharelink:
+            title = '错误'
+            msg = f'链接 {url}:\n分享链接不存在或已失效。'
         else:
-            shash = url.split('/')[-1]
-            sharelink = ShareLink.objects.filter(Q(shash=shash))
-            msg = ''
-            title = '成功'
-            if not sharelink:
+            if sharelink.is_used:
                 title = '错误'
-                msg = f'链接 {url}:\n分享链接不存在或已失效。'
+                msg = f'链接 {url}:\n分享链接已被使用。'
+            elif sharelink.is_expired or check_sharelink_expired(sharelink):
+                title = '错误'
+                msg = f'链接 {url}:\n分享链接已过期。'
+            elif current_uid == str(sharelink.uid):
+                title = '错误'
+                msg = f'链接 {url}:\n你不能把链接分享给自己。'
             else:
-                sharelink = sharelink[0]
-                if str(request.user.id) == str(sharelink.uid):
-                    title = '错误'
-                    msg = f'链接 {url}:\n你不能把链接分享给自己。'
+                share_ids = [rid.strip() for rid in str(sharelink.peers).split(',') if rid.strip()]
+                self_rids = set(RustDeskPeer.objects.filter(Q(uid=current_uid)).values_list('rid', flat=True))
+                peers_share = RustDeskPeer.objects.filter(Q(rid__in=share_ids) & Q(uid=str(sharelink.uid)))
+
+                added = []
+                skipped = []
+                for source_peer in peers_share:
+                    if source_peer.rid in self_rids:
+                        skipped.append(source_peer.rid)
+                        continue
+                    source_peer.id = None
+                    source_peer.uid = current_uid
+                    source_peer.save()
+                    self_rids.add(source_peer.rid)
+                    added.append(source_peer.rid)
+
+                sharelink.is_used = True
+                sharelink.save(update_fields=['is_used'])
+
+                if added:
+                    msg += ','.join(added) + '已被成功获取。'
                 else:
-                    sharelink.is_used = True
-                    sharelink.save()
-                    peers = sharelink.peers
-                    peers = peers.split(',')
-                    # 自己的peers若重叠，需要跳过
-                    peers_self_ids = [x.rid for x in RustDeskPeer.objects.filter(Q(uid=request.user.id))]
-                    peers_share = RustDeskPeer.objects.filter(Q(rid__in=peers) & Q(uid=sharelink.uid))
-                    # peers_share_ids = [x.rid for x in peers_share]
+                    title = '错误'
+                    msg = '未获取到可添加的机器（可能已存在于你的列表中）。'
+                if skipped:
+                    msg += f' 已跳过：{",".join(skipped)}。'
 
-                    for peer in peers_share:
-                        if peer.rid in peers_self_ids:
-                            continue
-                        # peer = RustDeskPeer.objects.get(rid=peer.rid)
-                        peer_f = RustDeskPeer.objects.filter(Q(rid=peer.rid) & Q(uid=sharelink.uid))
-                        if not peer_f:
-                            msg += f"{peer.rid}已存在,"
-                            continue
+        title = _(title)
+        msg = _(msg)
+        return render(request, 'msg.html', {'title': title, 'msg': msg})
 
-                        if len(peer_f) > 1:
-                            msg += f'{peer.rid}存在多个,已经跳过。 '
-                            continue
-                        peer = peer_f[0]
-                        peer.id = None
-                        peer.uid = request.user.id
-                        peer.save()
-                        msg += f"{peer.rid},"
-
-                    msg += '已被成功获取。'
-
-            title = _(title)
-            msg = _(msg)
-            return render(request, 'msg.html', {'title': title, 'msg': msg})
-    else:
-        data = request.POST.get('data', '[]')
-
+    data = request.POST.get('data', '[]')
+    try:
         data = json.loads(data)
-        if not data:
-            return JsonResponse({'code': 0, 'msg': _('数据为空。')})
-        rustdesk_ids = [x['title'].split('|')[0] for x in data]
-        rustdesk_ids = ','.join(rustdesk_ids)
-        sharelink = ShareLink(
-            uid=request.user.id,
-            shash=generate_secure_token(24),
-            peers=rustdesk_ids,
-        )
-        sharelink.save()
+    except json.JSONDecodeError:
+        return JsonResponse({'code': 0, 'msg': _('数据格式错误。')})
 
-        return JsonResponse({'code': 1, 'shash': sharelink.shash})
+    if not data:
+        return JsonResponse({'code': 0, 'msg': _('数据为空。')})
+
+    rustdesk_ids = []
+    for item in data:
+        title = str(item.get('title', ''))
+        rid = title.split('|')[0].strip()
+        if rid:
+            rustdesk_ids.append(rid)
+
+    if not rustdesk_ids:
+        return JsonResponse({'code': 0, 'msg': _('数据为空。')})
+
+    sharelink = ShareLink(
+        uid=current_uid,
+        shash=generate_secure_token(24),
+        peers=','.join(rustdesk_ids),
+    )
+    sharelink.save()
+
+    return JsonResponse({'code': 1, 'shash': sharelink.shash})
 
 
 def get_conn_log():

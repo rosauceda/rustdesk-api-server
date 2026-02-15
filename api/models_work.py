@@ -136,7 +136,8 @@ class ShareLink(models.Model):
     '''
     uid = models.CharField(verbose_name=_('用户ID'), max_length=16)
     shash = models.CharField(verbose_name=_('链接Key'), max_length=60)
-    peers = models.CharField(verbose_name=_('机器ID列表'), max_length=20)
+    # The link may include multiple IDs and can exceed 20 chars.
+    peers = models.TextField(verbose_name=_('机器ID列表'))
     is_used = models.BooleanField(verbose_name=_('是否使用'), default=False)
     is_expired = models.BooleanField(verbose_name=_('是否过期'), default=False)
     create_time = models.DateTimeField(verbose_name=_('生成时间'), auto_now_add=True)
