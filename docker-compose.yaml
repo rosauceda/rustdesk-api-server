@@ -17,6 +17,7 @@ services:
       - TZ=${TZ:-America/Mexico_City}
       - RUSTDESK_KEY=${RUSTDESK_KEY:-}
       - RUSTDESK_RELAY_ADDR=${RUSTDESK_RELAY_ADDR}
+      - ALWAYS_USE_RELAY=${ALWAYS_USE_RELAY:-N}
     volumes:
       - ${RUSTDESK_DATA_DIR:-./data}:/root
     ports:

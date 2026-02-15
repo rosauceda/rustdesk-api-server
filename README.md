@@ -209,6 +209,7 @@ docker compose -f docker-compose.yaml --env-file .env config
 | ---- | ------- | ----------- |
 | `RUSTDESK_RELAY_ADDR` | `your-domain.example.com:21117` | `hbbs -r` 中继地址 |
 | `RUSTDESK_KEY` | 空 | 可选密钥；留空时不带 `-k`，有值时 `hbbs/hbbr` 自动带 `-k` |
+| `ALWAYS_USE_RELAY` | `N` | 是否强制走中继。`Y` 强制中继，`N` 按 RustDesk 默认策略 |
 | `SECRET_KEY` | 示例随机串 | API 的 Django `SECRET_KEY` |
 | `CSRF_TRUSTED_ORIGINS` | `https://your-domain.example.com` | API 的 CSRF 信任来源 |
 | `ID_SERVER` | `your-domain.example.com` | API 的 ID 服务器域名（WebUI 使用） |
@@ -236,6 +237,8 @@ docker compose -f docker-compose.yaml --env-file .env config
   现在可以通过 `RUSTDESK_KEY` 控制兼容模式：
   - 为空：保持原行为（不传 `-k`）。
   - 非空：`hbbs/hbbr` 自动启用 `-k <你的key>`。
+
+  若 WebUI/客户端出现 `Failed to secure tcp: deadline has elapsed`，可先设置 `ALWAYS_USE_RELAY=Y` 排查 NAT/P2P 问题。
 
 - Web控制端配置
 

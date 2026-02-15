@@ -188,6 +188,7 @@ docker compose -f docker-compose.yaml --env-file .env config
 | ---- | ------- | ----------- |
 | `RUSTDESK_RELAY_ADDR` | `your-domain.example.com:21117` | Relay address used by `hbbs -r` |
 | `RUSTDESK_KEY` | empty | Optional key mode; empty means no `-k`, non-empty enables `-k` for both `hbbs/hbbr` |
+| `ALWAYS_USE_RELAY` | `N` | Force relay mode. `Y` forces relay, `N` keeps RustDesk default behavior |
 | `SECRET_KEY` | sample random string | Django `SECRET_KEY` for API |
 | `CSRF_TRUSTED_ORIGINS` | `https://your-domain.example.com` | API CSRF trusted origins |
 | `ID_SERVER` | `your-domain.example.com` | API ID server domain (used by WebUI) |
@@ -217,6 +218,8 @@ docker compose -f docker-compose.yaml --env-file .env config
   In integrated compose, compatibility mode is controlled by `RUSTDESK_KEY`:
   - Empty: keeps current behavior (no `-k`).
   - Non-empty: `hbbs/hbbr` start with `-k <your-key>`.
+
+  If WebUI/client shows `Failed to secure tcp: deadline has elapsed`, set `ALWAYS_USE_RELAY=Y` first to rule out NAT/P2P path issues.
 
 - Web Control Terminal Configuration
 
