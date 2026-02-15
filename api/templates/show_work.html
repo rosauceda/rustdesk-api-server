@@ -35,7 +35,11 @@
               <tr>
                 <td>{{one.rid}} </td>
                 <td>{{one.version}}</td>
-                <td>{{one.has_rhash}}</td>
+                <td>
+                  <span class="bool-pill {% if one.has_rhash_bool %}bool-on{% else %}bool-off{% endif %}">
+                    {{ one.has_rhash }}
+                  </span>
+                </td>
                 <td>{{one.username}}</td>
                 <td>{{one.hostname}}</td>
                 <td>{{one.alias}}</td>
@@ -46,7 +50,11 @@
                 <td>{{one.ip_address}}</td>
                 <td>{{one.create_time}}</td>
                 <td>{{one.update_time}}</td>
-                <td>{{one.status}} </td>
+                <td>
+                  <span class="status-pill {% if one.is_online %}status-online{% else %}status-offline{% endif %}">
+                    {{ one.status }}
+                  </span>
+                </td>
               </tr>
               {% endfor %}
             </tbody>
@@ -55,8 +63,8 @@
         </div>
       </div>
     </div>
-    <div class="layui-col-md4 layui-col-md-offset4">
-      <span class="step-links">
+    <div class="layui-col-md12">
+      <div class="pager">
           {% if page_obj.has_previous %}
               <button class="layui-btn" ><a href="?page=1">&laquo; {{ "首页" | translate }}</a></button>
               <button class="layui-btn" ><a href="?page={{ page_obj.previous_page_number }}">{{ "上一页" | translate }}</a></button>
@@ -70,8 +78,8 @@
               <button class="layui-btn" > <a href="?page={{ page_obj.next_page_number }}">{{ "下一页" | translate }}</a></button>
               <button class="layui-btn" ><a href="?page={{ page_obj.paginator.num_pages }}">{{ "尾页" | translate }} &raquo;</a></button>
           {% endif %}
-      </span>
-  </div>
+      </div>
+    </div>
     {% endif %}
 
 
@@ -115,7 +123,11 @@
                 <td>{{one.ip_address}}</td>
                 <td>{{one.create_time}} </td>
                 <td>{{one.update_time}} </td>
-                <td>{{one.status}} </td>
+                <td>
+                  <span class="status-pill {% if one.is_online %}status-online{% else %}status-offline{% endif %}">
+                    {{ one.status }}
+                  </span>
+                </td>
               </tr>
               {% endfor %}
             </tbody>
@@ -124,8 +136,8 @@
         </div>
       </div>
     </div>
-    <div class="layui-col-md4 layui-col-md-offset4">
-      <span class="step-links">
+    <div class="layui-col-md12">
+      <div class="pager">
           {% if page_obj.has_previous %}
               <button class="layui-btn" ><a href="?show_type=admin&page=1">&laquo; {{ "首页" | translate }}</a></button>
               <button class="layui-btn" ><a href="?show_type=admin&page={{ page_obj.previous_page_number }}">{{ "上一页" | translate }}</a></button>
@@ -139,8 +151,8 @@
               <button class="layui-btn" > <a href="?show_type=admin&page={{ page_obj.next_page_number }}">{{ "下一页" | translate }}</a></button>
               <button class="layui-btn" ><a href="?show_type=admin&page={{ page_obj.paginator.num_pages }}">{{ "尾页" | translate }} &raquo;</a></button>
           {% endif %}
-      </span>
-  </div>
+      </div>
+    </div>
     {% endif %}
 
 

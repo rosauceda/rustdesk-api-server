@@ -34,9 +34,9 @@
                 <td>{{one.user_ip}}</td>
                 <td>{{one.filesize}}</td>
                 {% if one.direction == 0 %}
-                <td>User Received File</td>
+                <td><span class="bool-pill bool-off">RX</span></td>
                 {% else %}
-                <td>User Sent File</td>
+                <td><span class="bool-pill bool-on">TX</span></td>
                 {% endif %}
                 <td>{{one.logged_at}}</td>
               </tr>
@@ -47,8 +47,8 @@
         </div>
       </div>
     </div>
-    <div class="layui-col-md4 layui-col-md-offset4">
-      <span class="step-links">
+    <div class="layui-col-md12">
+      <div class="pager">
           {% if page_obj.has_previous %}
               <button class="layui-btn" ><a href="?page=1">&laquo; {{ "首页" | translate }}</a></button>
               <button class="layui-btn" ><a href="?page={{ page_obj.previous_page_number }}">{{ "上一页" | translate }}</a></button>
@@ -62,8 +62,8 @@
               <button class="layui-btn" > <a href="?page={{ page_obj.next_page_number }}">{{ "下一页" | translate }}</a></button>
               <button class="layui-btn" ><a href="?page={{ page_obj.paginator.num_pages }}">{{ "尾页" | translate  }} &raquo;</a></button>
           {% endif %}
-      </span>
-  </div>  
+      </div>
+    </div>
   </div>
 </div>
 

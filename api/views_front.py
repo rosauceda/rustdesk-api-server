@@ -219,16 +219,20 @@ def get_single_info(uid):
     devices = {x.rid: x for x in devices}
     now = datetime.datetime.now()
     for rid, device in devices.items():
+        is_online = (now - device.update_time).total_seconds() <= 120
         peers[rid]['create_time'] = device.create_time.strftime('%Y-%m-%d')
         peers[rid]['update_time'] = device.update_time.strftime('%Y-%m-%d %H:%M')
         peers[rid]['version'] = device.version
         peers[rid]['memory'] = device.memory
         peers[rid]['cpu'] = device.cpu
         peers[rid]['os'] = device.os
-        peers[rid]['status'] = _('在线') if (now - device.update_time).total_seconds() <= 120 else _('离线')
+        peers[rid]['is_online'] = is_online
+        peers[rid]['status'] = _('在线') if is_online else _('离线')
 
     for rid in peers.keys():
-        peers[rid]['has_rhash'] = _('是') if len(peers[rid]['rhash']) > 1 else _('否')
+        has_rhash_bool = len(peers[rid]['rhash']) > 1
+        peers[rid]['has_rhash_bool'] = has_rhash_bool
+        peers[rid]['has_rhash'] = _('是') if has_rhash_bool else _('否')
 
     return [v for k, v in peers.items()]
 
@@ -248,7 +252,9 @@ def get_all_info():
         if not devices[rid].get('rust_user', ''):
             devices[rid]['rust_user'] = _('未登录')
     for k, v in devices.items():
-        devices[k]['status'] = _('在线') if (now - datetime.datetime.strptime(v['update_time'], '%Y-%m-%d %H:%M')).total_seconds() <= 120 else _('离线')
+        is_online = (now - datetime.datetime.strptime(v['update_time'], '%Y-%m-%d %H:%M')).total_seconds() <= 120
+        devices[k]['is_online'] = is_online
+        devices[k]['status'] = _('在线') if is_online else _('离线')
     return [v for k, v in devices.items()]
 
 

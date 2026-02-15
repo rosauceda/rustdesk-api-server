@@ -3,9 +3,12 @@
 {% block title %}{{title}}{% endblock %}
 {% block legend_name %}{{ "信息" | translate }}{% endblock %}
 {% block content %} 
-<div style="padding: 20px; background-color: #F2F2F2;">
-  <div class="layui-row layui-col-space15">
-    {{ msg|linebreaksbr }}
-</div></div>
+<div class="page-wrap">
+  <div class="layui-card msg-card">
+    <div class="layui-card-body">
+      {{ msg|linebreaksbr }}
+    </div>
+  </div>
+</div>
 
 {% endblock %}

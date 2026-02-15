@@ -11,14 +11,13 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="RustDesk">
-  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+  <link rel="apple-touch-icon" href="{% static 'web_client/favicon.svg' %}">
 
   <!-- Favicon -->
-  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="icon" type="image/svg+xml" href="{% static 'web_client/favicon.svg' %}" />
 
   <title>RustDesk Web桌面</title>
   <link rel="manifest" href="{% static "/web_client/manifest.json" %}">
-  <script src=></script>
   <script src="{% static "/web_client/ogvjs-1.8.6/ogv.js" %}"></script>
   <script>
       var api = ["{{domain}}"];
@@ -147,7 +146,7 @@
       loadMainDartJs();
     }
   </script>
-  <script src={% static "/web_client/libs/firebase-app.js" %}?8.10.1"></script>
+  <script src="{% static "/web_client/libs/firebase-app.js" %}?8.10.1"></script>
 
   <script>
     // Your web app's Firebase configuration

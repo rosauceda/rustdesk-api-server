@@ -10,53 +10,14 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <link rel="stylesheet" href="{% static 'layui/css/layui.css' %}">
-    <style>
-        .page-wrap {
-            padding: 20px;
-            background-color: #F2F2F2;
-        }
-        .table-wrap {
-            overflow-x: auto;
-        }
-        .layui-btn a {
-            color: #fff;
-            text-decoration: none;
-            display: block;
-        }
-        .layui-btn a:hover {
-            color: #fff;
-        }
-        .lang-switch {
-            margin: 0;
-            padding: 0 10px;
-        }
-        .lang-switch select {
-            height: 30px;
-            margin-top: 15px;
-            border: 1px solid #d2d2d2;
-            border-radius: 2px;
-            background: #fff;
-        }
-    </style>
+    <link rel="stylesheet" href="{% static 'layui/css/app-ui.css' %}">
     {% block link %}{% endblock %}
 </head>
 
 <body>
-    <script src={% static "layui/layui.js" %}></script>
-    <script>
-        layui.use('element', function () {
-            var element = layui.element; //导航的hover效果、二级菜单等功能，需要依赖element模块
-
-            //监听导航点击
-            element.on('nav(demo)', function (elem) {
-                //console.log(elem)
-                layer.msg(elem.text());
-            });
-        });
-    </script>
-
     <ul class="layui-nav">
         {% get_current_language as LANGUAGE_CODE %}
+        <li class="layui-nav-item app-brand"><a href="/">RustDesk Hub</a></li>
         <li class="layui-nav-item"><a href="/">{% trans "首页" %}</a></li>
         {% if u.is_admin %}
         <li class="layui-nav-item"><a href="/api/work?show_type=admin">{% trans "所有设备" %}</a>
@@ -76,7 +37,7 @@
         <li class="layui-nav-item"><a href="/admin" target="_blank">{% trans "管理后台" %}</a></li>
         {% endif %}
         <li class="layui-nav-item"><a href="/api/user_action?action=logout">{% trans "退出" %}</a></li>
-        <li class="layui-nav-item lang-switch" style="float:right;">
+        <li class="layui-nav-item lang-switch">
             <form action="/i18n/setlang/" method="post">
                 {% csrf_token %}
                 <input name="next" type="hidden" value="{{ request.get_full_path }}">
