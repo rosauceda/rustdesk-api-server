@@ -180,11 +180,11 @@ docker compose -f docker-compose.yaml --env-file .env config
 
 | Variable Name | Default | Purpose |
 | ---- | ------- | ----------- |
-| `RUSTDESK_DOMAIN` | `rustdesk.dmfapps.cloud` | Public domain, also mapped to API `ID_SERVER` |
-| `RUSTDESK_RELAY_ADDR` | `rustdesk.dmfapps.cloud:21117` | Relay address used by `hbbs -r` |
+| `RUSTDESK_DOMAIN` | `your-domain.example.com` | Public domain, also mapped to API `ID_SERVER` |
+| `RUSTDESK_RELAY_ADDR` | `your-domain.example.com:21117` | Relay address used by `hbbs -r` |
 | `RUSTDESK_KEY` | empty | Optional key mode; empty means no `-k`, non-empty enables `-k` for both `hbbs/hbbr` |
 | `RUSTDESK_API_SECRET_KEY` | sample random string | Mapped to API `SECRET_KEY` |
-| `RUSTDESK_CSRF_TRUSTED_ORIGINS` | `https://rustdesk.dmfapps.cloud` | Mapped to API `CSRF_TRUSTED_ORIGINS` |
+| `RUSTDESK_CSRF_TRUSTED_ORIGINS` | `https://your-domain.example.com` | Mapped to API `CSRF_TRUSTED_ORIGINS` |
 | `RUSTDESK_LANGUAGE_CODE` | `en` | Mapped to API `LANGUAGE_CODE` |
 | `RUSTDESK_DEBUG` | `False` | Mapped to API `DEBUG` |
 | `RUSTDESK_ALLOW_REGISTRATION` | `True` | Mapped to API `ALLOW_REGISTRATION` |

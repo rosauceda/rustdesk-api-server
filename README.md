@@ -201,11 +201,11 @@ docker compose -f docker-compose.yaml --env-file .env config
 
 | 变量名 | 默认值 | 作用 |
 | ---- | ------- | ----------- |
-| `RUSTDESK_DOMAIN` | `rustdesk.dmfapps.cloud` | 对外域名，同时注入 API 的 `ID_SERVER` |
-| `RUSTDESK_RELAY_ADDR` | `rustdesk.dmfapps.cloud:21117` | `hbbs -r` 中继地址 |
+| `RUSTDESK_DOMAIN` | `your-domain.example.com` | 对外域名，同时注入 API 的 `ID_SERVER` |
+| `RUSTDESK_RELAY_ADDR` | `your-domain.example.com:21117` | `hbbs -r` 中继地址 |
 | `RUSTDESK_KEY` | 空 | 可选密钥；留空时不带 `-k`，有值时 `hbbs/hbbr` 自动带 `-k` |
 | `RUSTDESK_API_SECRET_KEY` | 示例随机串 | 注入 API 的 `SECRET_KEY` |
-| `RUSTDESK_CSRF_TRUSTED_ORIGINS` | `https://rustdesk.dmfapps.cloud` | 注入 API 的 `CSRF_TRUSTED_ORIGINS` |
+| `RUSTDESK_CSRF_TRUSTED_ORIGINS` | `https://your-domain.example.com` | 注入 API 的 `CSRF_TRUSTED_ORIGINS` |
 | `RUSTDESK_LANGUAGE_CODE` | `en` | 注入 API 的 `LANGUAGE_CODE` |
 | `RUSTDESK_DEBUG` | `False` | 注入 API 的 `DEBUG` |
 | `RUSTDESK_ALLOW_REGISTRATION` | `True` | 注入 API 的 `ALLOW_REGISTRATION` |

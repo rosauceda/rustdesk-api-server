@@ -16,7 +16,7 @@ services:
     environment:
       - TZ=${RUSTDESK_TZ:-America/Mexico_City}
       - RUSTDESK_KEY=${RUSTDESK_KEY:-}
-      - RUSTDESK_RELAY_ADDR=${RUSTDESK_RELAY_ADDR:-rustdesk.dmfapps.cloud:21117}
+      - RUSTDESK_RELAY_ADDR=${RUSTDESK_RELAY_ADDR}
     volumes:
       - ${RUSTDESK_DATA_DIR:-./data}:/root
     ports:
@@ -60,9 +60,9 @@ services:
     environment:
       - HOST=0.0.0.0
       - TZ=${RUSTDESK_TZ:-America/Mexico_City}
-      - CSRF_TRUSTED_ORIGINS=${RUSTDESK_CSRF_TRUSTED_ORIGINS:-https://rustdesk.dmfapps.cloud}
-      - ID_SERVER=${RUSTDESK_DOMAIN:-rustdesk.dmfapps.cloud}
-      - SECRET_KEY=${RUSTDESK_API_SECRET_KEY:-please-change-me}
+      - CSRF_TRUSTED_ORIGINS=${RUSTDESK_CSRF_TRUSTED_ORIGINS}
+      - ID_SERVER=${RUSTDESK_DOMAIN}
+      - SECRET_KEY=${RUSTDESK_API_SECRET_KEY}
       - ALLOW_REGISTRATION=${RUSTDESK_ALLOW_REGISTRATION:-True}
       - LANGUAGE_CODE=${RUSTDESK_LANGUAGE_CODE:-en}
       - DEBUG=${RUSTDESK_DEBUG:-False}
