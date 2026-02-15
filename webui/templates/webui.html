@@ -49,11 +49,28 @@
       }
 
       window.api = [normalized];
+      window.__rustdeskUsePathProxy = false;
+      window.__rustdeskModuleLoaded = false;
+
+      function loadRustdeskModule() {
+        if (window.__rustdeskModuleLoaded) {
+          return;
+        }
+        window.__rustdeskModuleLoaded = true;
+        var mod = document.createElement('script');
+        mod.type = 'module';
+        mod.crossOrigin = 'anonymous';
+        mod.src = '{% static "/web_client/module/index.b7bb6fa2.js" %}';
+        document.head.appendChild(mod);
+      }
 
       // Force websocket over 443 path when external high ports are blocked.
       var NativeWebSocket = window.WebSocket;
       if (typeof NativeWebSocket === "function") {
         function rewriteWsUrl(url) {
+          if (!window.__rustdeskUsePathProxy) {
+            return url;
+          }
           try {
             var u = new URL(url, window.location.href);
             if (u.hostname !== window.location.hostname) {
@@ -93,9 +110,34 @@
         });
         window.WebSocket = PatchedWebSocket;
       }
+
+      // Auto-detect if nginx path proxy is enabled.
+      // If /ws/id is not routed (404), keep direct :21118/:21119 mode.
+      var settled = false;
+      function finishDetection(usePathProxy) {
+        if (settled) {
+          return;
+        }
+        settled = true;
+        window.__rustdeskUsePathProxy = !!usePathProxy;
+        loadRustdeskModule();
+      }
+
+      var detectionTimer = setTimeout(function () {
+        finishDetection(false);
+      }, 1500);
+
+      fetch('/ws/id', { method: 'GET', cache: 'no-store' })
+        .then(function (resp) {
+          clearTimeout(detectionTimer);
+          finishDetection(resp.status !== 404);
+        })
+        .catch(function () {
+          clearTimeout(detectionTimer);
+          finishDetection(false);
+        });
     })();
   </script>
-  <script type="module" crossorigin src={% static "/web_client/module/index.b7bb6fa2.js" %}></script>
   
   <script src="{% static "/web_client/js/yuv-canvas-1.2.6.js" %}"></script>
   <style>
