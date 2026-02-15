@@ -181,6 +181,7 @@ else:
 LANGUAGES = (
     ('zh-hans', '中文简体'),
     ('en', 'English'),
+    ('es', 'Español'),
 
 )
 

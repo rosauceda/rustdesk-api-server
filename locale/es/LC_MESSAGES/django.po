@@ -1,0 +1,579 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-05-14 10:44+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Codex\n"
+"Language-Team: Spanish\n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: .\api\admin_user.py:14 .\api\front_locale.py:28
+msgid "密码"
+msgstr "Contrasena"
+
+#: .\api\admin_user.py:15
+msgid "再次输入密码"
+msgstr "Repetir contrasena"
+
+#: .\api\admin_user.py:26
+msgid "密码校验失败，两次密码不一致。"
+msgstr "La validacion de la contrasena fallo; las contrasenas no coinciden."
+
+#: .\api\admin_user.py:44
+msgid "密码Hash值"
+msgstr "Hash de contrasena"
+
+#: .\api\admin_user.py:75
+msgid "基本信息"
+msgstr "Informacion basica"
+
+#: .\api\admin_user.py:100
+msgid "RustDesk自建Web"
+msgstr "Web autohospedada de RustDesk"
+
+#: .\api\admin_user.py:101
+msgid "未定义"
+msgstr "Sin definir"
+
+#: .\api\front_locale.py:4 .\api\templates\base.html:42
+msgid "管理后台"
+msgstr "Panel de administracion"
+
+#: .\api\front_locale.py:5
+msgid "ID列表"
+msgstr "Lista de IDs"
+
+#: .\api\front_locale.py:6
+msgid "分享机器"
+msgstr "Compartir equipo"
+
+#: .\api\front_locale.py:7
+msgid "这么简易的东西，忘记密码这功能就没必要了吧。"
+msgstr "Para algo tan simple, recuperar contrasena no es necesario."
+
+#: .\api\front_locale.py:8
+msgid "立即注册"
+msgstr "Registrarse ahora"
+
+#: .\api\front_locale.py:9
+msgid "创建时间"
+msgstr "Fecha de creacion"
+
+#: .\api\front_locale.py:10
+msgid "注册成功，请前往登录页登录。"
+msgstr "Registro exitoso. Ve a la pagina de inicio de sesion."
+
+#: .\api\front_locale.py:11
+msgid "注册日期"
+msgstr "Fecha de registro"
+
+#: .\api\front_locale.py:12
+msgid "2、所分享的机器，被分享人享有相同的权限，如果机器设置了保存密码，被分享人也可以直接连接。"
+msgstr ""
+"2. El equipo compartido otorga los mismos permisos al receptor. Si guarda la"
+" contrasena, podra conectarse directamente."
+
+#: .\api\front_locale.py:13
+msgid "导出xlsx"
+msgstr "Exportar xlsx"
+
+#: .\api\front_locale.py:14
+msgid "生成分享链接"
+msgstr "Generar enlace de comparticion"
+
+#: .\api\front_locale.py:15
+msgid "请输入8~20位密码。可以包含字母、数字和特殊字符。"
+msgstr ""
+"Ingresa una contrasena de 8 a 20 caracteres. Puede incluir letras, numeros y"
+" simbolos."
+
+#: .\api\front_locale.py:16
+msgid "尾页"
+msgstr "Ultima pagina"
+
+#: .\api\front_locale.py:17
+msgid "请确认密码"
+msgstr "Confirmar contrasena"
+
+#: .\api\front_locale.py:18
+msgid "注册"
+msgstr "Registrarse"
+
+#: .\api\front_locale.py:19 .\api\models_work.py:73
+msgid "内存"
+msgstr "Memoria"
+
+#: .\api\front_locale.py:20 .\api\templates\base.html:31
+msgid "首页"
+msgstr "Inicio"
+
+#: .\api\front_locale.py:21 .\api\templates\base.html:37
+msgid "网页控制"
+msgstr "Control web"
+
+#: .\api\front_locale.py:22
+msgid "注册时间"
+msgstr "Hora de registro"
+
+#: .\api\front_locale.py:23
+msgid "链接地址"
+msgstr "Direccion del enlace"
+
+#: .\api\front_locale.py:24
+msgid "请输入密码"
+msgstr "Ingresa la contrasena"
+
+#: .\api\front_locale.py:25 .\api\models_work.py:50 .\api\models_work.py:76
+msgid "系统用户名"
+msgstr "Usuario del sistema"
+
+#: .\api\front_locale.py:26
+msgid "状态"
+msgstr "Estado"
+
+#: .\api\front_locale.py:27
+msgid "已有账号？立即登录"
+msgstr "Ya tienes cuenta? Inicia sesion"
+
+#: .\api\front_locale.py:29 .\api\models_work.py:52
+msgid "别名"
+msgstr "Alias"
+
+#: .\api\front_locale.py:30
+msgid "上一页"
+msgstr "Pagina anterior"
+
+#: .\api\front_locale.py:31
+msgid "更新时间"
+msgstr "Hora de actualizacion"
+
+#: .\api\front_locale.py:32
+msgid "综合屏"
+msgstr "Vista general"
+
+#: .\api\front_locale.py:33 .\api\models_work.py:53
+msgid "平台"
+msgstr "Plataforma"
+
+#: .\api\front_locale.py:34
+msgid "全部用户"
+msgstr "Todos los usuarios"
+
+#: .\api\front_locale.py:35
+msgid "注册页"
+msgstr "Pagina de registro"
+
+#: .\api\front_locale.py:36
+msgid "分享机器给其他用户"
+msgstr "Compartir equipo con otros usuarios"
+
+#: .\api\front_locale.py:37 .\api\templates\base.html:33
+msgid "所有设备"
+msgstr "Todos los dispositivos"
+
+#: .\api\front_locale.py:38
+msgid "连接密码"
+msgstr "Contrasena de conexion"
+
+#: .\api\front_locale.py:39
+msgid "设备统计"
+msgstr "Estadisticas de dispositivos"
+
+#: .\api\front_locale.py:40
+msgid "所属用户"
+msgstr "Usuario propietario"
+
+#: .\api\front_locale.py:41 .\api\templates\base.html:36
+msgid "分享"
+msgstr "Compartir"
+
+#: .\api\front_locale.py:42
+msgid "请输入用户名"
+msgstr "Ingresa el nombre de usuario"
+
+#: .\api\front_locale.py:43
+msgid "1、链接有效期为15分钟，切勿随意分享给他人。"
+msgstr "1. El enlace dura 15 minutos. No lo compartas sin cuidado."
+
+#: .\api\front_locale.py:44
+msgid "CPU"
+msgstr "CPU"
+
+#: .\api\front_locale.py:45 .\api\models_work.py:49 .\api\models_work.py:70
+msgid "客户端ID"
+msgstr "ID de cliente"
+
+#: .\api\front_locale.py:46
+msgid "下一页"
+msgstr "Pagina siguiente"
+
+#: .\api\front_locale.py:47
+msgid "登录"
+msgstr "Iniciar sesion"
+
+#: .\api\front_locale.py:48 .\api\templates\base.html:45
+msgid "退出"
+msgstr "Cerrar sesion"
+
+#: .\api\front_locale.py:49
+msgid "请将要分享的机器调整到右侧"
+msgstr "Mueve a la derecha los equipos que quieras compartir"
+
+#: .\api\front_locale.py:50
+msgid "成功！如需分享，请复制以下链接给其他人：<br>"
+msgstr "Exito! Si deseas compartir, copia este enlace y envialo:<br>"
+
+#: .\api\front_locale.py:51
+msgid "忘记密码？"
+msgstr "Olvidaste tu contrasena?"
+
+#: .\api\front_locale.py:52
+msgid "计算机名"
+msgstr "Nombre del equipo"
+
+#: .\api\front_locale.py:53
+msgid "两次输入密码不一致!"
+msgstr "Las contrasenas no coinciden!"
+
+#: .\api\front_locale.py:54
+msgid "页码"
+msgstr "Pagina"
+
+#: .\api\front_locale.py:55
+msgid "版本"
+msgstr "Version"
+
+#: .\api\front_locale.py:56 .\api\models_user.py:32 .\api\models_work.py:9
+msgid "用户名"
+msgstr "Nombre de usuario"
+
+#: .\api\front_locale.py:57
+msgid "3、为保障安全，链接有效期为15分钟、链接仅有效1次。链接一旦被（非分享人的登录用户）访问，分享生效，后续访问链接失效。"
+msgstr ""
+"3. Por seguridad, el enlace dura 15 minutos y solo se puede usar una vez. "
+"Cuando un usuario distinto del emisor lo abre, la comparticion se aplica y "
+"el enlace expira."
+
+#: .\api\front_locale.py:58
+msgid "系统"
+msgstr "Sistema"
+
+#: .\api\front_locale.py:59
+msgid "我的机器"
+msgstr "Mis equipos"
+
+#: .\api\front_locale.py:60
+#| msgid "基本信息"
+msgid "信息"
+msgstr "Informacion"
+
+#: .\api\front_locale.py:61
+msgid "远程ID"
+msgstr "ID remoto"
+
+#: .\api\front_locale.py:62
+msgid "远程别名"
+msgstr "Alias remoto"
+
+#: .\api\front_locale.py:63 .\api\models_work.py:11 .\api\models_work.py:48
+#: .\api\models_work.py:126
+msgid "用户ID"
+msgstr "ID de usuario"
+
+#: .\api\front_locale.py:64
+msgid "用户别名"
+msgstr "Alias de usuario"
+
+#: .\api\front_locale.py:65
+msgid "用户IP"
+msgstr "IP de usuario"
+
+#: .\api\front_locale.py:66
+msgid "文件大小"
+msgstr "Tamano de archivo"
+
+#: .\api\front_locale.py:67
+msgid "发送/接受"
+msgstr "Enviar/recibir"
+
+#: .\api\front_locale.py:68
+msgid "记录于"
+msgstr "Registrado en"
+
+#: .\api\front_locale.py:69
+msgid "连接开始时间"
+msgstr "Inicio de conexion"
+
+#: .\api\front_locale.py:70
+msgid "连接结束时间"
+msgstr "Fin de conexion"
+
+#: .\api\front_locale.py:71
+msgid "时长"
+msgstr "Duracion"
+
+#: .\api\front_locale.py:72 .\api\templates\base.html:40
+msgid "连接日志"
+msgstr "Registro de conexiones"
+
+#: .\api\front_locale.py:73 .\api\templates\base.html:41
+msgid "文件传输日志"
+msgstr "Registro de transferencia de archivos"
+
+#: .\api\front_locale.py:74
+msgid "页码 #"
+msgstr "Pagina #"
+
+#: .\api\front_locale.py:75
+msgid "下一页 #"
+msgstr "Siguiente #"
+
+#: .\api\front_locale.py:76
+msgid "上一页 #"
+msgstr "Anterior #"
+
+#: .\api\front_locale.py:77
+#| msgid "上一页"
+msgid "第一页"
+msgstr "Primera pagina"
+
+#: .\api\front_locale.py:78
+#| msgid "上一页"
+msgid "上页"
+msgstr "Pagina anterior"
+
+#: .\api\models_user.py:40
+msgid "登录信息:"
+msgstr "Informacion de inicio de sesion:"
+
+#: .\api\models_user.py:42
+msgid "是否激活"
+msgstr "Activo"
+
+#: .\api\models_user.py:43
+msgid "是否管理员"
+msgstr "Administrador"
+
+#: .\api\models_user.py:82
+msgid "用户"
+msgstr "Usuario"
+
+#: .\api\models_user.py:83
+msgid "用户列表"
+msgstr "Lista de usuarios"
+
+#: .\api\models_work.py:10
+msgid "RustDesk ID"
+msgstr "RustDesk ID"
+
+#: .\api\models_work.py:12
+msgid "uuid"
+msgstr "UUID"
+
+#: .\api\models_work.py:13
+msgid "access_token"
+msgstr "Token de acceso"
+
+#: .\api\models_work.py:14
+msgid "登录时间"
+msgstr "Hora de inicio de sesion"
+
+#: .\api\models_work.py:19
+msgid "Token列表"
+msgstr "Lista de tokens"
+
+#: .\api\models_work.py:30
+msgid "所属用户ID"
+msgstr "ID de usuario propietario"
+
+#: .\api\models_work.py:31
+msgid "标签名称"
+msgstr "Nombre de etiqueta"
+
+#: .\api\models_work.py:32
+msgid "标签颜色"
+msgstr "Color de etiqueta"
+
+#: .\api\models_work.py:37
+msgid "Tags列表"
+msgstr "Lista de etiquetas"
+
+#: .\api\models_work.py:51
+msgid "操作系统名"
+msgstr "Nombre del sistema operativo"
+
+#: .\api\models_work.py:54
+msgid "标签"
+msgstr "Etiqueta"
+
+#: .\api\models_work.py:55
+msgid "设备链接密码"
+msgstr "Contrasena de enlace del dispositivo"
+
+#: .\api\models_work.py:60
+msgid "Peers列表"
+msgstr "Lista de peers"
+
+#: .\api\models_work.py:72
+msgid "主机名"
+msgstr "Nombre del host"
+
+#: .\api\models_work.py:74
+msgid "操作系统"
+msgstr "Sistema operativo"
+
+#: .\api\models_work.py:77
+msgid "客户端版本"
+msgstr "Version del cliente"
+
+#: .\api\models_work.py:78
+msgid "设备注册时间"
+msgstr "Fecha de registro del dispositivo"
+
+#: .\api\models_work.py:83
+msgid "设备"
+msgstr "Dispositivo"
+
+#: .\api\models_work.py:84
+msgid "设备列表"
+msgstr "Lista de dispositivos"
+
+#: .\api\models_work.py:127
+msgid "链接Key"
+msgstr "Clave del enlace"
+
+#: .\api\models_work.py:128
+msgid "机器ID列表"
+msgstr "Lista de IDs de equipos"
+
+#: .\api\models_work.py:129
+msgid "是否使用"
+msgstr "Utilizado"
+
+#: .\api\models_work.py:130
+msgid "是否过期"
+msgstr "Expirado"
+
+#: .\api\models_work.py:131
+msgid "生成时间"
+msgstr "Hora de generacion"
+
+#: .\api\models_work.py:137
+msgid "分享链接"
+msgstr "Enlace compartido"
+
+#: .\api\models_work.py:138
+msgid "链接列表"
+msgstr "Lista de enlaces"
+
+#: .\api\views_api.py:20
+msgid "请求方式错误！请使用POST方式。"
+msgstr "Metodo de solicitud invalido. Usa POST."
+
+#: .\api\views_api.py:34
+msgid "帐号或密码错误！请重试，多次重试后将被锁定IP！"
+msgstr ""
+"Cuenta o contrasena incorrecta. Intenta de nuevo; tras varios intentos se "
+"bloqueara la IP."
+
+#: .\api\views_api.py:72
+msgid "请求方式错误！"
+msgstr "Metodo de solicitud invalido."
+
+#: .\api\views_api.py:80
+msgid "异常请求！"
+msgstr "Solicitud anomala."
+
+#: .\api\views_api.py:93 .\api\views_api.py:213
+msgid "错误的提交方式！"
+msgstr "Metodo de envio incorrecto."
+
+#: .\api\views_api.py:121
+msgid "拉取列表错误！"
+msgstr "Error al obtener la lista."
+
+#: .\api\views_api.py:200
+msgid "更新地址簿有误"
+msgstr "Error al actualizar la libreta de direcciones"
+
+#: .\api\views_api.py:247 .\api\views_front.py:207 .\api\views_front.py:226
+msgid "在线"
+msgstr "En linea"
+
+#: .\api\views_api.py:308
+msgid "好的"
+msgstr "OK"
+
+#: .\api\views_front.py:50
+msgid "model_to_dict接收的参数必须是模型对象"
+msgstr "El parametro de model_to_dict debe ser una instancia de modelo"
+
+#: .\api\views_front.py:55
+#, python-brace-format
+msgid "model_to_dict,要替换成{replace_field}字段已经存在了"
+msgstr "model_to_dict: el campo de reemplazo {replace_field} ya existe"
+
+#: .\api\views_front.py:60
+#, python-brace-format
+msgid "model_to_dict,要新增默认值，但字段{default_key}已经存在了"
+msgstr ""
+"model_to_dict: no se puede agregar valor por defecto; el campo {default_key}"
+" ya existe"
+
+#: .\api\views_front.py:134
+msgid "出了点问题，未获取用户名或密码。"
+msgstr "Ocurrio un problema; no se obtuvo usuario o contrasena."
+
+#: .\api\views_front.py:141
+msgid "帐号或密码错误！"
+msgstr "Cuenta o contrasena incorrecta."
+
+#: .\api\views_front.py:153
+msgid "当前未开放注册，请联系管理员！"
+msgstr "El registro esta cerrado por ahora; contacta al administrador."
+
+#: .\api\views_front.py:160
+msgid "用户名不得小于3位"
+msgstr "El nombre de usuario debe tener al menos 3 caracteres"
+
+#: .\api\views_front.py:165
+msgid "密码长度不符合要求, 应在8~20位。"
+msgstr "La longitud de la contrasena debe ser de 8 a 20 caracteres."
+
+#: .\api\views_front.py:171
+msgid "用户名已存在。"
+msgstr "El nombre de usuario ya existe."
+
+#: .\api\views_front.py:207 .\api\views_front.py:226
+msgid "离线"
+msgstr "Fuera de linea"
+
+#: .\api\views_front.py:210
+msgid "是"
+msgstr "Si"
+
+#: .\api\views_front.py:210
+msgid "否"
+msgstr "No"
+
+#: .\api\views_front.py:252
+msgid "设备信息表"
+msgstr "Tabla de informacion de dispositivos"
+
+#: .\api\views_front.py:351
+msgid "数据为空。"
+msgstr "No hay datos."
+
+#: .\api\views_front.py:373 .\api\views_front.py:378 .\api\views_front.py:409
+#: .\api\views_front.py:414
+msgid "UNKNOWN"
+msgstr "DESCONOCIDO"
+
+#~ msgid "未知"
+#~ msgstr "UNKNOWN"

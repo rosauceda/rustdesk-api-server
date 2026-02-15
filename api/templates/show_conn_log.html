@@ -2,12 +2,13 @@
 {% load my_filters %}
 {% block title %}RustDesk WebUI{% endblock %}
 {% block content %}
-<div style="padding: 20px; background-color: #F2F2F2;">
+<div class="page-wrap">
   <div class="layui-row layui-col-space15">
     <div class="layui-col-md15">
       <div class="layui-card">
         <div class="layui-card-header">{{ "连接日志" | translate }}:【{{u.username}}】</div>
         <div class="layui-card-body">
+          <div class="table-wrap">
           <table class="layui-table">
             <thead>
               <tr>
@@ -36,23 +37,24 @@
               {% endfor %}
             </tbody>
           </table>
+          </div>
         </div>
       </div>
     </div>
     <div class="layui-col-md4 layui-col-md-offset4">
       <span class="step-links">
           {% if page_obj.has_previous %}
-              <button class="layui-btn" ><a href="?page=1">&laquo; {{ "First" | translate }}</a></button>
-              <button class="layui-btn" ><a href="?page={{ page_obj.previous_page_number }}">{{ "Previous" | translate }}</a></button>
+              <button class="layui-btn" ><a href="?page=1">&laquo; {{ "首页" | translate }}</a></button>
+              <button class="layui-btn" ><a href="?page={{ page_obj.previous_page_number }}">{{ "上一页" | translate }}</a></button>
           {% endif %}
           {% if page_obj.paginator.num_pages > 1 %}
           <span class="current">
-              {{ "页码 #" | translate }} {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}
+              {{ "页码" | translate }} {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}
           </span>
           {% endif %}
           {% if page_obj.has_next %}
-              <button class="layui-btn" > <a href="?page={{ page_obj.next_page_number }}">{{ "Next" | translate }}</a></button>
-              <button class="layui-btn" ><a href="?page={{ page_obj.paginator.num_pages }}">{{ "Last" | translate }} &raquo;</a></button>
+              <button class="layui-btn" > <a href="?page={{ page_obj.next_page_number }}">{{ "下一页" | translate }}</a></button>
+              <button class="layui-btn" ><a href="?page={{ page_obj.paginator.num_pages }}">{{ "尾页" | translate }} &raquo;</a></button>
           {% endif %}
       </span>
   </div>  

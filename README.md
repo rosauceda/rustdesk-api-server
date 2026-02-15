@@ -163,7 +163,7 @@ services:
 | `MYSQL_PASSWORD` | 可选，默认 `-` | MYSQL数据库的密码 |
 | `MYSQL_PORT` | 可选，默认 `3306` | MYSQL数据库端口 |
 | 数据库配置 | -- 结束 -- | 查看【[sqlite3迁移mysql教程](/tutorial/sqlite2mysql.md)】 |
-| `LANGUAGE_CODE` | 可选，默认 `zh-hans` | 语言，支持中文(`zh-hans`)、英语(`en`) |
+| `LANGUAGE_CODE` | 可选，默认 `zh-hans` | 语言，支持中文(`zh-hans`)、英语(`en`)、西班牙语(`es`) |
 
 ## 使用问题
 

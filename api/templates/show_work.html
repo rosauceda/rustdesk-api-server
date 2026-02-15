@@ -3,13 +3,14 @@
 {% block title %}RustDesk WebUI{% endblock %}
 {% block legend_name %}{{ "综合屏" | translate }}{% endblock %}
 {% block content %}
-<div style="padding: 20px; background-color: #F2F2F2;">
+<div class="page-wrap">
   <div class="layui-row layui-col-space15">
     {% if not show_all %}
     <div class="layui-col-md15">
       <div class="layui-card">
         <div class="layui-card-header">{{ "设备统计" | translate }} - 【{{ "用户名" | translate }}:{{u.username}}】</div>
         <div class="layui-card-body">
+          <div class="table-wrap">
           <table class="layui-table">
             <thead>
               <tr>
@@ -50,6 +51,7 @@
               {% endfor %}
             </tbody>
           </table>
+          </div>
         </div>
       </div>
     </div>
@@ -80,6 +82,7 @@
           <div class="layui-btn" ><a href="/api/down_peers">{{ "导出xlsx" | translate }}</a></div>
         </div>
         <div class="layui-card-body">
+          <div class="table-wrap">
           <table class="layui-table">
             <thead>
               <tr>
@@ -117,6 +120,7 @@
               {% endfor %}
             </tbody>
           </table>
+          </div>
         </div>
       </div>
     </div>

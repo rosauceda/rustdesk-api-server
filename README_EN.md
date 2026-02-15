@@ -134,6 +134,7 @@ services:
 | `ID_SERVER` | Optional, default is the same host as the API server.<br>Customizable like `yourdomain.com` | ID server used by the web control terminal |
 | `DEBUG` | Optional, default `False` | Debug mode |
 | `ALLOW_REGISTRATION` | Optional, default `True` | Whether to allow new user registration |
+| `LANGUAGE_CODE` | Optional, default `zh-hans` | Language: Chinese (`zh-hans`), English (`en`), Spanish (`es`) |
 | Database Configuration | -- Start -- | If not using MYSQL, the following are unnecessary |
 | `DATABASE_TYPE` | Optional, default `SQLITE3` | Database type (SQLITE/MYSQL) |
 | `MYSQL_DBNAME` | Optional, default `-` | MYSQL database name |
