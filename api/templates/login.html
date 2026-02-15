@@ -57,11 +57,16 @@
         var form = layui.form;
         var $ = layui.jquery;
         form.on('submit(login)',function (data) {
+            var payload = data.field || {};
+            payload.csrfmiddlewaretoken = $('input[name=csrfmiddlewaretoken]').val();
             $.ajax({
                 url:'/api/user_action?action=login',
-                data:data.field,
+                data:payload,
                 dataType:'json',
                 type:'post',
+                headers:{
+                    'X-CSRFToken': payload.csrfmiddlewaretoken
+                },
 
                 success: function(resp) {
 		    			if(resp.code==1) {

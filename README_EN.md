@@ -143,6 +143,12 @@ Production (prebuilt image):
 docker compose -f docker-compose.yaml --env-file .env up -d
 ```
 
+Update API service only (without recreating `hbbs/hbbr`):
+
+```bash
+./update.sh
+```
+
 Development (local API build):
 
 ```bash
@@ -180,15 +186,15 @@ docker compose -f docker-compose.yaml --env-file .env config
 
 | Variable Name | Default | Purpose |
 | ---- | ------- | ----------- |
-| `RUSTDESK_DOMAIN` | `your-domain.example.com` | Public domain, also mapped to API `ID_SERVER` |
 | `RUSTDESK_RELAY_ADDR` | `your-domain.example.com:21117` | Relay address used by `hbbs -r` |
 | `RUSTDESK_KEY` | empty | Optional key mode; empty means no `-k`, non-empty enables `-k` for both `hbbs/hbbr` |
-| `RUSTDESK_API_SECRET_KEY` | sample random string | Mapped to API `SECRET_KEY` |
-| `RUSTDESK_CSRF_TRUSTED_ORIGINS` | `https://your-domain.example.com` | Mapped to API `CSRF_TRUSTED_ORIGINS` |
-| `RUSTDESK_LANGUAGE_CODE` | `en` | Mapped to API `LANGUAGE_CODE` |
-| `RUSTDESK_DEBUG` | `False` | Mapped to API `DEBUG` |
-| `RUSTDESK_ALLOW_REGISTRATION` | `True` | Mapped to API `ALLOW_REGISTRATION` |
-| `RUSTDESK_TZ` | `America/Mexico_City` | Container timezone |
+| `SECRET_KEY` | sample random string | Django `SECRET_KEY` for API |
+| `CSRF_TRUSTED_ORIGINS` | `https://your-domain.example.com` | API CSRF trusted origins |
+| `ID_SERVER` | `your-domain.example.com` | API ID server domain (used by WebUI) |
+| `LANGUAGE_CODE` | `en` | API language |
+| `DEBUG` | `False` | API debug switch |
+| `ALLOW_REGISTRATION` | `True` | Allow user registration in API |
+| `TZ` | `America/Mexico_City` | Container timezone |
 | `RUSTDESK_DATA_DIR` | `./data` | Host mount for `hbbs/hbbr` data |
 | `RUSTDESK_API_DB_DIR` | `./data/api-db` | Host mount for API sqlite database |
 
@@ -221,13 +227,19 @@ docker compose -f docker-compose.yaml --env-file .env config
   - Check if the ID server filling is correct.
 
   - If you access `https://your-domain/webui/`, ports `21118` and `21119` must also be proxied with TLS + WebSocket upgrade (see `tutorial/nginx/rustdesk.conf`).
-  - `RUSTDESK_DOMAIN` must match the actual public domain, or WebUI handshake can fail.
+  - `ID_SERVER` must match the actual public domain, or WebUI handshake can fail.
 
 - CSRF verification failed when logging in or logging out of backend operations. Request interrupted.
 
   This operation is highly likely to be a combination of docker configuration + nginx reverse proxy + SSL. Pay attention to modifying CSRF_TRUSTED_ORIGINS. If it is SSL, it starts with https, otherwise it is http.
 
-  In integrated compose, set `RUSTDESK_CSRF_TRUSTED_ORIGINS=https://your-domain` first.
+  In integrated compose, set `CSRF_TRUSTED_ORIGINS=https://your-domain` and make sure Nginx forwards `X-Forwarded-Proto https`.
+
+- Update fails with `KeyError: 'ContainerConfig'` (`docker-compose` 1.29.x)
+
+  This is a compatibility issue between legacy `docker-compose` v1 and newer image metadata. Prefer `docker compose` (v2 plugin).
+
+  Temporary workaround: run `./update.sh` to update only `rustdesk-api-server` and avoid recreating `hbbs/hbbr`.
 
 ## Development Plans
 

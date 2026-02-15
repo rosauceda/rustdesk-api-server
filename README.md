@@ -164,6 +164,12 @@ cp .env.example .env
 docker compose -f docker-compose.yaml --env-file .env up -d
 ```
 
+仅更新 API 服务（不重建 `hbbs/hbbr`）：
+
+```bash
+./update.sh
+```
+
 开发（本地 build API）：
 
 ```bash
@@ -201,15 +207,15 @@ docker compose -f docker-compose.yaml --env-file .env config
 
 | 变量名 | 默认值 | 作用 |
 | ---- | ------- | ----------- |
-| `RUSTDESK_DOMAIN` | `your-domain.example.com` | 对外域名，同时注入 API 的 `ID_SERVER` |
 | `RUSTDESK_RELAY_ADDR` | `your-domain.example.com:21117` | `hbbs -r` 中继地址 |
 | `RUSTDESK_KEY` | 空 | 可选密钥；留空时不带 `-k`，有值时 `hbbs/hbbr` 自动带 `-k` |
-| `RUSTDESK_API_SECRET_KEY` | 示例随机串 | 注入 API 的 `SECRET_KEY` |
-| `RUSTDESK_CSRF_TRUSTED_ORIGINS` | `https://your-domain.example.com` | 注入 API 的 `CSRF_TRUSTED_ORIGINS` |
-| `RUSTDESK_LANGUAGE_CODE` | `en` | 注入 API 的 `LANGUAGE_CODE` |
-| `RUSTDESK_DEBUG` | `False` | 注入 API 的 `DEBUG` |
-| `RUSTDESK_ALLOW_REGISTRATION` | `True` | 注入 API 的 `ALLOW_REGISTRATION` |
-| `RUSTDESK_TZ` | `America/Mexico_City` | 容器时区 |
+| `SECRET_KEY` | 示例随机串 | API 的 Django `SECRET_KEY` |
+| `CSRF_TRUSTED_ORIGINS` | `https://your-domain.example.com` | API 的 CSRF 信任来源 |
+| `ID_SERVER` | `your-domain.example.com` | API 的 ID 服务器域名（WebUI 使用） |
+| `LANGUAGE_CODE` | `en` | API 语言 |
+| `DEBUG` | `False` | API 调试开关 |
+| `ALLOW_REGISTRATION` | `True` | API 是否允许注册 |
+| `TZ` | `America/Mexico_City` | 容器时区 |
 | `RUSTDESK_DATA_DIR` | `./data` | `hbbs/hbbr` 数据目录挂载 |
 | `RUSTDESK_API_DB_DIR` | `./data/api-db` | API sqlite 目录挂载 |
 
@@ -240,13 +246,19 @@ docker compose -f docker-compose.yaml --env-file .env config
   - 检查ID服务器填写是否正确
 
   - 若使用 HTTPS 访问 `https://域名/webui/`，请确保 `21118`、`21119` 也配置了 TLS + WebSocket 反代（参考 `tutorial/nginx/rustdesk.conf`）。
-  - `RUSTDESK_DOMAIN` 需与实际访问域名一致，否则 WebUI 可能握手失败。
+  - `ID_SERVER` 需与实际访问域名一致，否则 WebUI 可能握手失败。
 
 - 后台操作登录或登出时：CSRF验证失败. 请求被中断.
 
   这种操作大概率是docker配置+nginx反代+SSL的组合，要注意修改CSRF_TRUSTED_ORIGINS，如果是ssl那就是https开头，否则就是http。
 
-  在一体化 compose 中，请优先配置 `RUSTDESK_CSRF_TRUSTED_ORIGINS=https://你的域名`。
+  在一体化 compose 中，请优先配置 `CSRF_TRUSTED_ORIGINS=https://你的域名`，并确保 Nginx 透传 `X-Forwarded-Proto https`。
+
+- 执行更新时报错 `KeyError: 'ContainerConfig'`（`docker-compose` 1.29.x）
+
+  这是旧版 `docker-compose` 与新镜像格式的兼容问题，建议优先使用 `docker compose`（v2 插件）。
+
+  临时规避方案：使用 `./update.sh` 仅更新 `rustdesk-api-server`，避免重建 `hbbs/hbbr`。
 
 - Mysql版本要求
 

@@ -132,14 +132,18 @@
         //
         //添加表单监听事件,提交注册信息
         form.on('submit(sub)', function() {
+            var csrfToken = $('input[name=csrfmiddlewaretoken]').val();
             $.ajax({
                 url:'/api/user_action?action=register',
                 type:'post',
                 dataType:'json',
+                headers:{
+                    'X-CSRFToken': csrfToken
+                },
                 data:{
                     user:$('#user').val(),
                     pwd:$('#pwd').val(),
-                    csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val(),
+                    csrfmiddlewaretoken:csrfToken,
                 },
                 success:function(data){
                     if (data.code == 1) {

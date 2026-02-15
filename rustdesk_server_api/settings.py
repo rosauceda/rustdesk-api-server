@@ -43,6 +43,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECURE_CROSS_ORIGIN_OPENER_POLICY = os.environ.get("SECURE_CROSS_ORIGIN_OPENER_POLICY", "unsafe-none")
 if SECURE_CROSS_ORIGIN_OPENER_POLICY not in {"same-origin", "same-origin-allow-popups", "unsafe-none"}:
     SECURE_CROSS_ORIGIN_OPENER_POLICY = "unsafe-none"
+# Behind reverse proxy (Nginx/Caddy), trust forwarded protocol by default
+# so Django can validate CSRF origins with https correctly.
+TRUST_X_FORWARDED_PROTO = env_bool("TRUST_X_FORWARDED_PROTO", True)
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https") if TRUST_X_FORWARDED_PROTO else None
+USE_X_FORWARDED_HOST = env_bool("USE_X_FORWARDED_HOST", True)
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
@@ -63,6 +68,8 @@ CSRF_TRUSTED_ORIGINS = env_list(
     "CSRF_TRUSTED_ORIGINS",
     env_list("RUSTDESK_CSRF_TRUSTED_ORIGINS", csrf_defaults)
 )
+CSRF_COOKIE_SECURE = env_bool("CSRF_COOKIE_SECURE", False)
+SESSION_COOKIE_SECURE = env_bool("SESSION_COOKIE_SECURE", False)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env_bool("DEBUG", False)
