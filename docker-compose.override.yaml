@@ -1,0 +1,7 @@
+version: "3.8"
+
+services:
+  rustdesk-api-server:
+    image: rustdesk-api-server:local
+    build:
+      context: .

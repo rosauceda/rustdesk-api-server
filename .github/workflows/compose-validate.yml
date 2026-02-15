@@ -1,0 +1,42 @@
+name: Validate Compose
+
+on:
+  pull_request:
+    paths:
+      - docker-compose.yaml
+      - docker-compose.override.yaml
+      - .env.example
+      - .github/workflows/compose-validate.yml
+  push:
+    branches:
+      - main
+      - master
+    paths:
+      - docker-compose.yaml
+      - docker-compose.override.yaml
+      - .env.example
+      - .github/workflows/compose-validate.yml
+  workflow_dispatch:
+
+jobs:
+  compose:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate base compose file
+        run: docker compose -f docker-compose.yaml --env-file .env.example config
+
+      - name: Validate compose with override
+        run: docker compose -f docker-compose.yaml -f docker-compose.override.yaml --env-file .env.example config
+
+      - name: Ensure base images are pinned by digest
+        run: |
+          set -euo pipefail
+          MISSING="$(grep -nE '^[[:space:]]*image:[[:space:]]*' docker-compose.yaml | grep -v '@sha256:' || true)"
+          if [ -n "$MISSING" ]; then
+            echo "These image lines are not pinned by digest:"
+            echo "$MISSING"
+            exit 1
+          fi

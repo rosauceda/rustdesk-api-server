@@ -1,18 +1,84 @@
 version: "3.8"
+
 services:
+  hbbs:
+    container_name: rustdesk-hbbs
+    image: rustdesk/rustdesk-server@sha256:10818ec05b179039c6660f4d8e74b303f0db2858bbad2b18e24992ea22d54cd6
+    command:
+      - sh
+      - -c
+      - |
+        if [ -n "$RUSTDESK_KEY" ]; then
+          exec hbbs -r "$RUSTDESK_RELAY_ADDR" -k "$RUSTDESK_KEY";
+        else
+          exec hbbs -r "$RUSTDESK_RELAY_ADDR";
+        fi
+    environment:
+      - TZ=${RUSTDESK_TZ:-America/Mexico_City}
+      - RUSTDESK_KEY=${RUSTDESK_KEY:-}
+      - RUSTDESK_RELAY_ADDR=${RUSTDESK_RELAY_ADDR:-rustdesk.dmfapps.cloud:21117}
+    volumes:
+      - ${RUSTDESK_DATA_DIR:-./data}:/root
+    ports:
+      - "21115:21115"
+      - "21116:21116"
+      - "21116:21116/udp"
+      - "21118:21118"
+    restart: unless-stopped
+    depends_on:
+      - hbbr
+    networks:
+      - rustdesk-net
+
+  hbbr:
+    container_name: rustdesk-hbbr
+    image: rustdesk/rustdesk-server@sha256:10818ec05b179039c6660f4d8e74b303f0db2858bbad2b18e24992ea22d54cd6
+    command:
+      - sh
+      - -c
+      - |
+        if [ -n "$RUSTDESK_KEY" ]; then
+          exec hbbr -k "$RUSTDESK_KEY";
+        else
+          exec hbbr;
+        fi
+    environment:
+      - TZ=${RUSTDESK_TZ:-America/Mexico_City}
+      - RUSTDESK_KEY=${RUSTDESK_KEY:-}
+    volumes:
+      - ${RUSTDESK_DATA_DIR:-./data}:/root
+    ports:
+      - "21117:21117"
+      - "21119:21119"
+    restart: unless-stopped
+    networks:
+      - rustdesk-net
+
   rustdesk-api-server:
     container_name: rustdesk-api-server
-    build:
-      context: .
+    image: ghcr.io/kingmo888/rustdesk-api-server@sha256:e171bb07efdfd551603b071f56c2c1595f60eca935d78465855a625aa864f783
     environment:
       - HOST=0.0.0.0
-      - TZ=Asia/Shanghai
-      - CSRF_TRUSTED_ORIGINS=http://yourdomain.com:21114
+      - TZ=${RUSTDESK_TZ:-America/Mexico_City}
+      - CSRF_TRUSTED_ORIGINS=${RUSTDESK_CSRF_TRUSTED_ORIGINS:-https://rustdesk.dmfapps.cloud}
+      - ID_SERVER=${RUSTDESK_DOMAIN:-rustdesk.dmfapps.cloud}
+      - SECRET_KEY=${RUSTDESK_API_SECRET_KEY:-please-change-me}
+      - ALLOW_REGISTRATION=${RUSTDESK_ALLOW_REGISTRATION:-True}
+      - LANGUAGE_CODE=${RUSTDESK_LANGUAGE_CODE:-en}
+      - DEBUG=${RUSTDESK_DEBUG:-False}
     volumes:
-      - /yourpath/db:/rustdesk-api-server/db
+      - ${RUSTDESK_API_DB_DIR:-./data/api-db}:/rustdesk-api-server/db
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
-    network_mode: bridge
     ports:
-      - "21114:21114"
+      - "127.0.0.1:21114:21114"
     restart: unless-stopped
+    depends_on:
+      - hbbs
+      - hbbr
+    networks:
+      - rustdesk-net
+
+networks:
+  rustdesk-net:
+    driver: bridge

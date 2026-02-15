@@ -144,6 +144,38 @@ services:
     restart: unless-stopped
 ```
 
+#### Docker方法3：`hbbs` + `hbbr` + `rustdesk-api-server` 一体化部署（推荐）
+
+项目已提供以下文件：
+
+- `docker-compose.yaml`：生产环境（预构建镜像，按 digest 固定版本）
+- `docker-compose.override.yaml`：开发环境（本地构建 API 镜像）
+- `.env.example`：部署参数模板
+
+使用步骤：
+
+```bash
+cp .env.example .env
+```
+
+生产（预构建镜像）：
+
+```bash
+docker compose -f docker-compose.yaml --env-file .env up -d
+```
+
+开发（本地 build API）：
+
+```bash
+docker compose -f docker-compose.yaml -f docker-compose.override.yaml --env-file .env up --build -d
+```
+
+验证 compose 配置：
+
+```bash
+docker compose -f docker-compose.yaml --env-file .env config
+```
+
 ## 环境变量
 
 | 变量名 | 参考值 | 备注 |
@@ -165,6 +197,22 @@ services:
 | 数据库配置 | -- 结束 -- | 查看【[sqlite3迁移mysql教程](/tutorial/sqlite2mysql.md)】 |
 | `LANGUAGE_CODE` | 可选，默认 `zh-hans` | 语言，支持中文(`zh-hans`)、英语(`en`)、西班牙语(`es`) |
 
+### docker-compose一体化部署变量（新增）
+
+| 变量名 | 默认值 | 作用 |
+| ---- | ------- | ----------- |
+| `RUSTDESK_DOMAIN` | `rustdesk.dmfapps.cloud` | 对外域名，同时注入 API 的 `ID_SERVER` |
+| `RUSTDESK_RELAY_ADDR` | `rustdesk.dmfapps.cloud:21117` | `hbbs -r` 中继地址 |
+| `RUSTDESK_KEY` | 空 | 可选密钥；留空时不带 `-k`，有值时 `hbbs/hbbr` 自动带 `-k` |
+| `RUSTDESK_API_SECRET_KEY` | 示例随机串 | 注入 API 的 `SECRET_KEY` |
+| `RUSTDESK_CSRF_TRUSTED_ORIGINS` | `https://rustdesk.dmfapps.cloud` | 注入 API 的 `CSRF_TRUSTED_ORIGINS` |
+| `RUSTDESK_LANGUAGE_CODE` | `en` | 注入 API 的 `LANGUAGE_CODE` |
+| `RUSTDESK_DEBUG` | `False` | 注入 API 的 `DEBUG` |
+| `RUSTDESK_ALLOW_REGISTRATION` | `True` | 注入 API 的 `ALLOW_REGISTRATION` |
+| `RUSTDESK_TZ` | `America/Mexico_City` | 容器时区 |
+| `RUSTDESK_DATA_DIR` | `./data` | `hbbs/hbbr` 数据目录挂载 |
+| `RUSTDESK_API_DB_DIR` | `./data/api-db` | API sqlite 目录挂载 |
+
 ## 使用问题
 
 - 管理员设置
@@ -179,6 +227,10 @@ services:
 
   新版本Key模式链接速度慢，可以在服务端启动服务时，不要带参数的-k，此时，客户端也不能配置key。
 
+  现在可以通过 `RUSTDESK_KEY` 控制兼容模式：
+  - 为空：保持原行为（不传 `-k`）。
+  - 非空：`hbbs/hbbr` 自动启用 `-k <你的key>`。
+
 - Web控制端配置
 
   - 设置ID_SERVER环境变量，或修改rustdesk_server_api/settings.py文件中ID_SERVER配置项，将ID服务器/中继服务器IP或域名填上。
@@ -187,11 +239,14 @@ services:
 
   - 检查ID服务器填写是否正确
 
-  - Web控制端目前仅支持非SSL模式，若webui为https访问，请将s去掉，否则ws连不上一直转圈。如：https://domain.com/webui，改为http://domain.com/webui
+  - 若使用 HTTPS 访问 `https://域名/webui/`，请确保 `21118`、`21119` 也配置了 TLS + WebSocket 反代（参考 `tutorial/nginx/rustdesk.conf`）。
+  - `RUSTDESK_DOMAIN` 需与实际访问域名一致，否则 WebUI 可能握手失败。
 
 - 后台操作登录或登出时：CSRF验证失败. 请求被中断.
 
   这种操作大概率是docker配置+nginx反代+SSL的组合，要注意修改CSRF_TRUSTED_ORIGINS，如果是ssl那就是https开头，否则就是http。
+
+  在一体化 compose 中，请优先配置 `RUSTDESK_CSRF_TRUSTED_ORIGINS=https://你的域名`。
 
 - Mysql版本要求
 

@@ -30,3 +30,4 @@ job2en.py
 
 .venv/*
 venv/*
+.env

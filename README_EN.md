@@ -123,6 +123,38 @@ services:
     restart: unless-stopped
 ```
 
+#### Docker Method 3: Integrated `hbbs` + `hbbr` + `rustdesk-api-server` (Recommended)
+
+The repository now includes:
+
+- `docker-compose.yaml`: production baseline (prebuilt images pinned by digest)
+- `docker-compose.override.yaml`: development override (build API locally)
+- `.env.example`: deployment variable template
+
+Usage:
+
+```bash
+cp .env.example .env
+```
+
+Production (prebuilt image):
+
+```bash
+docker compose -f docker-compose.yaml --env-file .env up -d
+```
+
+Development (local API build):
+
+```bash
+docker compose -f docker-compose.yaml -f docker-compose.override.yaml --env-file .env up --build -d
+```
+
+Validate compose configuration:
+
+```bash
+docker compose -f docker-compose.yaml --env-file .env config
+```
+
 ## Environment Variables
 
 | Variable Name | Reference Value | Note |
@@ -144,6 +176,22 @@ services:
 | `MYSQL_PORT` | Optional, default `3306` | MYSQL database port |
 | Database Configuration | -- End -- | See [sqlite3 migration to mysql tutorial](/tutorial/sqlite2mysql.md) |
 
+### Integrated docker-compose variables (new)
+
+| Variable Name | Default | Purpose |
+| ---- | ------- | ----------- |
+| `RUSTDESK_DOMAIN` | `rustdesk.dmfapps.cloud` | Public domain, also mapped to API `ID_SERVER` |
+| `RUSTDESK_RELAY_ADDR` | `rustdesk.dmfapps.cloud:21117` | Relay address used by `hbbs -r` |
+| `RUSTDESK_KEY` | empty | Optional key mode; empty means no `-k`, non-empty enables `-k` for both `hbbs/hbbr` |
+| `RUSTDESK_API_SECRET_KEY` | sample random string | Mapped to API `SECRET_KEY` |
+| `RUSTDESK_CSRF_TRUSTED_ORIGINS` | `https://rustdesk.dmfapps.cloud` | Mapped to API `CSRF_TRUSTED_ORIGINS` |
+| `RUSTDESK_LANGUAGE_CODE` | `en` | Mapped to API `LANGUAGE_CODE` |
+| `RUSTDESK_DEBUG` | `False` | Mapped to API `DEBUG` |
+| `RUSTDESK_ALLOW_REGISTRATION` | `True` | Mapped to API `ALLOW_REGISTRATION` |
+| `RUSTDESK_TZ` | `America/Mexico_City` | Container timezone |
+| `RUSTDESK_DATA_DIR` | `./data` | Host mount for `hbbs/hbbr` data |
+| `RUSTDESK_API_DB_DIR` | `./data/api-db` | Host mount for API sqlite database |
+
 ## Usage Issues
 
 - Administrator Settings
@@ -160,6 +208,10 @@ services:
 
   The new version Key mode connection speed is slow. You can start the service on the server without the -k parameter. At this time, the client cannot configure the key either.
 
+  In integrated compose, compatibility mode is controlled by `RUSTDESK_KEY`:
+  - Empty: keeps current behavior (no `-k`).
+  - Non-empty: `hbbs/hbbr` start with `-k <your-key>`.
+
 - Web Control Terminal Configuration
 
   - Set the ID_SERVER environment variable or modify the ID_SERVER configuration item in the rustdesk_server_api/settings.py file and fill in the IP or domain name of the ID server/relay server.
@@ -168,11 +220,14 @@ services:
 
   - Check if the ID server filling is correct.
 
-  - The web control terminal currently only supports non-SSL mode. If the webui is accessed via https, remove the 's', otherwise ws cannot connect and keeps spinning. For example: https://domain.com/webui, change to http://domain.com/webui
+  - If you access `https://your-domain/webui/`, ports `21118` and `21119` must also be proxied with TLS + WebSocket upgrade (see `tutorial/nginx/rustdesk.conf`).
+  - `RUSTDESK_DOMAIN` must match the actual public domain, or WebUI handshake can fail.
 
 - CSRF verification failed when logging in or logging out of backend operations. Request interrupted.
 
   This operation is highly likely to be a combination of docker configuration + nginx reverse proxy + SSL. Pay attention to modifying CSRF_TRUSTED_ORIGINS. If it is SSL, it starts with https, otherwise it is http.
+
+  In integrated compose, set `RUSTDESK_CSRF_TRUSTED_ORIGINS=https://your-domain` first.
 
 ## Development Plans
 
