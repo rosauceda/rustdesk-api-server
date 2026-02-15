@@ -111,8 +111,8 @@
         window.WebSocket = PatchedWebSocket;
       }
 
-      // Auto-detect if nginx path proxy is enabled.
-      // If /ws/id is not routed (404), keep direct :21118/:21119 mode.
+      // Auto-detect if nginx path proxy is enabled using a real websocket probe.
+      // Some servers return 404/400 for plain HTTP GET /ws/id even when websocket upgrade works.
       var settled = false;
       function finishDetection(usePathProxy) {
         if (settled) {
@@ -123,19 +123,59 @@
         loadRustdeskModule();
       }
 
-      var detectionTimer = setTimeout(function () {
+      if (typeof NativeWebSocket !== "function") {
         finishDetection(false);
-      }, 1500);
+      } else {
+        var wsProbeDone = false;
+        var wsProbe;
 
-      fetch('/ws/id', { method: 'GET', cache: 'no-store' })
-        .then(function (resp) {
+        function finishWsProbe(usePathProxy) {
+          if (wsProbeDone) {
+            return;
+          }
+          wsProbeDone = true;
+          if (wsProbe) {
+            try {
+              wsProbe.onopen = null;
+              wsProbe.onerror = null;
+              wsProbe.onclose = null;
+            } catch (e) {}
+          }
+          finishDetection(usePathProxy);
+        }
+
+        var detectionTimer = setTimeout(function () {
+          try {
+            if (wsProbe && wsProbe.readyState === NativeWebSocket.CONNECTING) {
+              wsProbe.close();
+            }
+          } catch (e) {}
+          finishWsProbe(false);
+        }, 1500);
+
+        try {
+          var wsProto = window.location.protocol === "https:" ? "wss://" : "ws://";
+          wsProbe = new NativeWebSocket(wsProto + window.location.host + "/ws/id");
+          wsProbe.onopen = function () {
+            clearTimeout(detectionTimer);
+            try {
+              wsProbe.close();
+            } catch (e) {}
+            finishWsProbe(true);
+          };
+          wsProbe.onerror = function () {
+            clearTimeout(detectionTimer);
+            finishWsProbe(false);
+          };
+          wsProbe.onclose = function () {
+            clearTimeout(detectionTimer);
+            finishWsProbe(false);
+          };
+        } catch (e) {
           clearTimeout(detectionTimer);
-          finishDetection(resp.status !== 404);
-        })
-        .catch(function () {
-          clearTimeout(detectionTimer);
-          finishDetection(false);
-        });
+          finishWsProbe(false);
+        }
+      }
     })();
   </script>
   
