@@ -34,6 +34,16 @@ def generate_secure_token(length=32):
     return secrets.token_urlsafe(length)
 
 
+def safe_xls_sheet_name(name, fallback='Sheet1'):
+    # Excel/xlwt constraints: <=31 chars and no []:*?/\
+    invalid_chars = set('[]:*?/\\')
+    sheet_name = ''.join('_' if ch in invalid_chars else ch for ch in str(name).strip())
+    sheet_name = sheet_name.strip("'")
+    if not sheet_name:
+        sheet_name = fallback
+    return sheet_name[:31]
+
+
 def getStrMd5(s):
     if not isinstance(s, (str,)):
         s = str(s)
@@ -266,7 +276,8 @@ def down_peers(request):
 
     all_info = get_all_info()
     f = xlwt.Workbook(encoding='utf-8')
-    sheet1 = f.add_sheet(_(u'设备信息表'), cell_overwrite_ok=True)
+    sheet_name = safe_xls_sheet_name(_(u'设备信息表'))
+    sheet1 = f.add_sheet(sheet_name, cell_overwrite_ok=True)
     all_fields = [x.name for x in RustDesDevice._meta.get_fields()]
     all_fields.append('rust_user')
     for i, one in enumerate(all_info):
