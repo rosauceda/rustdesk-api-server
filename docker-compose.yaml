@@ -14,7 +14,7 @@ services:
           exec hbbs -r "$RUSTDESK_RELAY_ADDR";
         fi
     environment:
-      - TZ=${RUSTDESK_TZ:-America/Mexico_City}
+      - TZ=${TZ:-America/Mexico_City}
       - RUSTDESK_KEY=${RUSTDESK_KEY:-}
       - RUSTDESK_RELAY_ADDR=${RUSTDESK_RELAY_ADDR}
     volumes:
@@ -43,7 +43,7 @@ services:
           exec hbbr;
         fi
     environment:
-      - TZ=${RUSTDESK_TZ:-America/Mexico_City}
+      - TZ=${TZ:-America/Mexico_City}
       - RUSTDESK_KEY=${RUSTDESK_KEY:-}
     volumes:
       - ${RUSTDESK_DATA_DIR:-./data}:/root
@@ -59,13 +59,13 @@ services:
     image: ghcr.io/rosauceda/rustdesk-api-server@sha256:583e875d9abb8c22ad123d660f7ddf4a274f88a913e30c9ceecf9746dfc940e6
     environment:
       - HOST=0.0.0.0
-      - TZ=${RUSTDESK_TZ:-America/Mexico_City}
-      - CSRF_TRUSTED_ORIGINS=${RUSTDESK_CSRF_TRUSTED_ORIGINS}
-      - ID_SERVER=${RUSTDESK_DOMAIN}
-      - SECRET_KEY=${RUSTDESK_API_SECRET_KEY}
-      - ALLOW_REGISTRATION=${RUSTDESK_ALLOW_REGISTRATION:-True}
-      - LANGUAGE_CODE=${RUSTDESK_LANGUAGE_CODE:-en}
-      - DEBUG=${RUSTDESK_DEBUG:-False}
+      - TZ=${TZ:-America/Mexico_City}
+      - CSRF_TRUSTED_ORIGINS=${CSRF_TRUSTED_ORIGINS}
+      - ID_SERVER=${ID_SERVER}
+      - SECRET_KEY=${SECRET_KEY}
+      - ALLOW_REGISTRATION=${ALLOW_REGISTRATION:-True}
+      - LANGUAGE_CODE=${LANGUAGE_CODE:-en}
+      - DEBUG=${DEBUG:-False}
     volumes:
       - ${RUSTDESK_API_DB_DIR:-./data/api-db}:/rustdesk-api-server/db
       - /etc/timezone:/etc/timezone:ro
