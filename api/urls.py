@@ -7,10 +7,13 @@ else:
 from api import views
  
 urlpatterns = [
+    url(r'^login-options$', views.login_options),
     url(r'^login',views.login),
     url(r'^logout',views.logout),
     url(r'^ab$',views.ab),
+    url(r'^ab/personal$', views.ab_personal),  # 兼容新版客户端
     url(r'^ab\/get',views.ab_get), # 兼容 x86-sciter 版客户端
+    url(r'^device-group/accessible$', views.device_group_accessible),  # 兼容新版客户端
     url(r'^users',views.users),
     url(r'^peers',views.peers),
     url(r'^currentUser',views.currentUser),

@@ -92,6 +92,21 @@ def login(request):
 
 
 @csrf_exempt
+def login_options(request):
+    """
+    Compatibility endpoint used by newer desktop clients before /api/login.
+    """
+    result = {
+        'code': 1,
+        'data': {
+            'types': ['password'],
+            'verify': False,
+        }
+    }
+    return JsonResponse(result)
+
+
+@csrf_exempt
 def logout(request):
     if request.method == 'GET':
         result = {'error': _('请求方式错误！')}
@@ -234,6 +249,56 @@ def ab_get(request):
     # 兼容 x86-sciter 版客户端，此版客户端通过访问 "POST /api/ab/get" 来获取地址簿
     request.method = 'GET'
     return ab(request)
+
+
+@csrf_exempt
+def ab_personal(request):
+    """
+    Compatibility endpoint for newer desktop clients that call /api/ab/personal.
+    If payload includes "data", keep original update behavior.
+    Otherwise return current address-book content (GET-style).
+    """
+    if request.method == 'POST':
+        raw_body = (request.body or b'').strip()
+        if raw_body:
+            try:
+                postdata = json.loads(raw_body.decode())
+                if isinstance(postdata, dict) and 'data' in postdata:
+                    return ab(request)
+            except Exception:
+                pass
+        request.method = 'GET'
+        return ab(request)
+
+    request.method = 'GET'
+    return ab(request)
+
+
+@csrf_exempt
+def device_group_accessible(request):
+    """
+    Compatibility endpoint used by newer clients.
+    This project does not implement device groups, so return an empty page.
+    """
+    try:
+        current = int(request.GET.get('current', 1))
+    except Exception:
+        current = 1
+    try:
+        page_size = int(request.GET.get('pageSize', 100))
+    except Exception:
+        page_size = 100
+
+    result = {
+        'code': 1,
+        'data': {
+            'records': [],
+            'total': 0,
+            'current': current,
+            'pageSize': page_size,
+        }
+    }
+    return JsonResponse(result)
 
 
 @csrf_exempt
