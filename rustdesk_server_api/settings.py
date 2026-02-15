@@ -47,15 +47,22 @@ if SECURE_CROSS_ORIGIN_OPENER_POLICY not in {"same-origin", "same-origin-allow-p
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get("SECRET_KEY", 'j%7yjvygpih=6b%qf!q%&ixpn+27dngzdu-i3xh-^3xgy3^nnc')
+SECRET_KEY = (
+    os.environ.get("SECRET_KEY")
+    or os.environ.get("RUSTDESK_API_SECRET_KEY")
+    or 'j%7yjvygpih=6b%qf!q%&ixpn+27dngzdu-i3xh-^3xgy3^nnc'
+)
 # ID服务器IP或域名，一般与中继服务器，用于web client
-ID_SERVER = os.environ.get("ID_SERVER", '').strip()
+ID_SERVER = (os.environ.get("ID_SERVER") or os.environ.get("RUSTDESK_DOMAIN") or '').strip()
 ID_SERVER_HOST = extract_host(ID_SERVER)
 
 csrf_defaults = ["http://127.0.0.1:21114", "http://localhost:21114"]
 if ID_SERVER_HOST:
     csrf_defaults.extend([f"https://{ID_SERVER_HOST}", f"http://{ID_SERVER_HOST}"])
-CSRF_TRUSTED_ORIGINS = env_list("CSRF_TRUSTED_ORIGINS", csrf_defaults)
+CSRF_TRUSTED_ORIGINS = env_list(
+    "CSRF_TRUSTED_ORIGINS",
+    env_list("RUSTDESK_CSRF_TRUSTED_ORIGINS", csrf_defaults)
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env_bool("DEBUG", False)
