@@ -11,6 +11,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <link rel="stylesheet" href="{% static 'layui/css/layui.css' %}">
     <link rel="stylesheet" href="{% static 'layui/css/app-ui.css' %}">
+    <script src="{% static 'layui/layui.js' %}"></script>
     {% block link %}{% endblock %}
 </head>
 
@@ -44,7 +45,7 @@
                 <select name="language" onchange="this.form.submit()">
                     <option value="zh-hans" {% if LANGUAGE_CODE == 'zh-hans' %}selected{% endif %}>中文</option>
                     <option value="en" {% if LANGUAGE_CODE == 'en' %}selected{% endif %}>English</option>
-                    <option value="es" {% if LANGUAGE_CODE == 'es' %}selected{% endif %}>Espanol</option>
+                    <option value="es" {% if LANGUAGE_CODE == 'es' %}selected{% endif %}>Español</option>
                 </select>
             </form>
         </li>
@@ -54,6 +55,12 @@
         <legend>{% block legend_name %}{% endblock %}</legend>
     </fieldset>
     {% block content %}{% endblock %}
+    <script>
+        layui.use(['element'], function () {
+            layui.element.render('nav');
+        });
+    </script>
+    {% block scripts %}{% endblock %}
 </body>
 
 </html>

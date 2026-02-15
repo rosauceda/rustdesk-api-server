@@ -195,6 +195,10 @@ msgstr "Belongs to User"
 msgid "分享"
 msgstr "Share"
 
+#: .\api\templates\base.html:39
+msgid "日志"
+msgstr "Logs"
+
 #: .\api\front_locale.py:42
 msgid "请输入用户名"
 msgstr "Please enter username"
