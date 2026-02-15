@@ -9,6 +9,7 @@
 
   <!-- iOS meta tags & icons -->
   <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="RustDesk">
   <link rel="apple-touch-icon" href="{% static 'web_client/favicon.svg' %}">
@@ -20,7 +21,79 @@
   <link rel="manifest" href="{% static "/web_client/manifest.json" %}">
   <script src="{% static "/web_client/ogvjs-1.8.6/ogv.js" %}"></script>
   <script>
-      var api = ["{{domain}}"];
+    (function () {
+      var raw = "{{ domain|escapejs }}";
+      var normalized = (raw || "").trim().replace(/^https?:\/\//i, "").split("/")[0];
+      var isHostPort = /^[^:/\s?#]+(?::\d+)?$/.test(normalized);
+      if (!isHostPort) {
+        normalized = window.location.hostname;
+      }
+
+      function looksInvalid(v) {
+        if (!v) return true;
+        var value = String(v).trim();
+        if (!value) return true;
+        if (/^https?:\/\//i.test(value)) return true;
+        if (value.indexOf("/") >= 0) return true;
+        return !/^[^:/\s?#]+(?::\d+)?$/.test(value);
+      }
+
+      var current = localStorage.getItem("rendezvous-server");
+      if (looksInvalid(current)) {
+        localStorage.setItem("rendezvous-server", normalized);
+      }
+
+      var custom = localStorage.getItem("custom-rendezvous-server");
+      if (looksInvalid(custom)) {
+        localStorage.removeItem("custom-rendezvous-server");
+      }
+
+      window.api = [normalized];
+
+      // Force websocket over 443 path when external high ports are blocked.
+      var NativeWebSocket = window.WebSocket;
+      if (typeof NativeWebSocket === "function") {
+        function rewriteWsUrl(url) {
+          try {
+            var u = new URL(url, window.location.href);
+            if (u.hostname !== window.location.hostname) {
+              return url;
+            }
+            if (u.port === "21118") {
+              u.port = "";
+              u.pathname = "/ws/id";
+              u.search = "";
+              u.hash = "";
+              return u.toString();
+            }
+            if (u.port === "21119") {
+              u.port = "";
+              u.pathname = "/ws/relay";
+              u.search = "";
+              u.hash = "";
+              return u.toString();
+            }
+          } catch (e) {
+            return url;
+          }
+          return url;
+        }
+
+        function PatchedWebSocket(url, protocols) {
+          var rewrittenUrl = rewriteWsUrl(String(url));
+          return protocols !== undefined
+            ? new NativeWebSocket(rewrittenUrl, protocols)
+            : new NativeWebSocket(rewrittenUrl);
+        }
+
+        PatchedWebSocket.prototype = NativeWebSocket.prototype;
+        Object.setPrototypeOf(PatchedWebSocket, NativeWebSocket);
+        ["CONNECTING", "OPEN", "CLOSING", "CLOSED"].forEach(function (k) {
+          PatchedWebSocket[k] = NativeWebSocket[k];
+        });
+        window.WebSocket = PatchedWebSocket;
+      }
+    })();
   </script>
   <script type="module" crossorigin src={% static "/web_client/module/index.b7bb6fa2.js" %}></script>
   
@@ -83,8 +156,9 @@
        application. For more information, see:
        https://developers.google.com/web/fundamentals/primers/service-workers -->
   <script>
-    var serviceWorkerVersion = null;
+    var serviceWorkerVersion = "1";
     var scriptLoaded = false;
+
     function loadMainDartJs() {
       if (scriptLoaded) {
         return;
@@ -96,6 +170,25 @@
       document.body.append(scriptTag);
     }
 
+    function shouldRegisterServiceWorker(serviceWorkerUrl) {
+      return fetch(serviceWorkerUrl, { cache: 'no-store' })
+        .then(function (resp) {
+          if (!resp.ok) {
+            return '';
+          }
+          return resp.text();
+        })
+        .then(function (content) {
+          if (!content) {
+            return false;
+          }
+          return content.indexOf('$$RESOURCES_MAP') === -1 && content.indexOf('$$CORE_LIST') === -1;
+        })
+        .catch(function () {
+          return false;
+        });
+    }
+
     if ('serviceWorker' in navigator) {
       // Service workers are supported. Use them.
       window.addEventListener('load', function () {
@@ -103,32 +196,44 @@
         // Otherwise, the browser will load the script multiple times,
         // potentially different versions.
         var serviceWorkerUrl = '{% static "/web_client/flutter_service_worker.js" %}?v=' + serviceWorkerVersion;
-        navigator.serviceWorker.register(serviceWorkerUrl)
-          .then((reg) => {
-            function waitForActivation(serviceWorker) {
-              serviceWorker.addEventListener('statechange', () => {
-                if (serviceWorker.state == 'activated') {
-                  console.log('Installed new service worker.');
-                  loadMainDartJs();
-                }
-              });
-            }
-            if (!reg.active && (reg.installing || reg.waiting)) {
-              // No active web worker and we have installed or are installing
-              // one for the first time. Simply wait for it to activate.
-              waitForActivation(reg.installing || reg.waiting);
-            } else if (!reg.active.scriptURL.endsWith(serviceWorkerVersion)) {
-              // When the app updates the serviceWorkerVersion changes, so we
-              // need to ask the service worker to update.
-              console.log('New service worker available.');
-              reg.update();
-              waitForActivation(reg.installing);
-            } else {
-              // Existing service worker is still good.
-              console.log('Loading app from service worker.');
+        shouldRegisterServiceWorker(serviceWorkerUrl).then(function (canRegister) {
+          if (!canRegister) {
+            console.warn('Skipping invalid service worker, loading app directly.');
+            loadMainDartJs();
+            return;
+          }
+
+          navigator.serviceWorker.register(serviceWorkerUrl)
+            .then((reg) => {
+              function waitForActivation(serviceWorker) {
+                serviceWorker.addEventListener('statechange', () => {
+                  if (serviceWorker.state == 'activated') {
+                    console.log('Installed new service worker.');
+                    loadMainDartJs();
+                  }
+                });
+              }
+              if (!reg.active && (reg.installing || reg.waiting)) {
+                // No active web worker and we have installed or are installing
+                // one for the first time. Simply wait for it to activate.
+                waitForActivation(reg.installing || reg.waiting);
+              } else if (!reg.active.scriptURL.endsWith(serviceWorkerVersion)) {
+                // When the app updates the serviceWorkerVersion changes, so we
+                // need to ask the service worker to update.
+                console.log('New service worker available.');
+                reg.update();
+                waitForActivation(reg.installing);
+              } else {
+                // Existing service worker is still good.
+                console.log('Loading app from service worker.');
+                loadMainDartJs();
+              }
+            })
+            .catch(function (err) {
+              console.warn('Service worker registration failed. Loading app directly.', err);
               loadMainDartJs();
-            }
-          });
+            });
+        });
 
         // If service worker doesn't succeed in a reasonable amount of time,
         // fallback to plaint <script> tag.

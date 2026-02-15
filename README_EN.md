@@ -227,6 +227,7 @@ docker compose -f docker-compose.yaml --env-file .env config
   - Check if the ID server filling is correct.
 
   - If you access `https://your-domain/webui/`, ports `21118` and `21119` must also be proxied with TLS + WebSocket upgrade (see `tutorial/nginx/rustdesk.conf`).
+  - If logs show `GET /ws/id 404`, your reverse proxy is missing path routing: add `/ws/id -> 21118` and `/ws/relay -> 21119` under the `443` server block.
   - `ID_SERVER` must match the actual public domain, or WebUI handshake can fail.
 
 - CSRF verification failed when logging in or logging out of backend operations. Request interrupted.

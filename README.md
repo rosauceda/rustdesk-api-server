@@ -246,6 +246,7 @@ docker compose -f docker-compose.yaml --env-file .env config
   - 检查ID服务器填写是否正确
 
   - 若使用 HTTPS 访问 `https://域名/webui/`，请确保 `21118`、`21119` 也配置了 TLS + WebSocket 反代（参考 `tutorial/nginx/rustdesk.conf`）。
+  - 若日志出现 `GET /ws/id 404`，说明反代缺少路径转发：需在 `443` 下添加 `/ws/id -> 21118` 与 `/ws/relay -> 21119`。
   - `ID_SERVER` 需与实际访问域名一致，否则 WebUI 可能握手失败。
 
 - 后台操作登录或登出时：CSRF验证失败. 请求被中断.
