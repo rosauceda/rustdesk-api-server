@@ -249,10 +249,14 @@ def get_all_info():
         device = devices.get(peer.rid, None)
         if device:
             devices[peer.rid]['rust_user'] = user.username
+            if not devices[peer.rid].get('alias'):
+                devices[peer.rid]['alias'] = peer.alias
 
     for rid in devices.keys():
         if not devices[rid].get('rust_user', ''):
             devices[rid]['rust_user'] = _('未登录')
+        if 'alias' not in devices[rid]:
+            devices[rid]['alias'] = ''
     for k, v in devices.items():
         is_online = (now - datetime.datetime.strptime(v['update_time'], '%Y-%m-%d %H:%M')).total_seconds() <= 120
         devices[k]['is_online'] = is_online
@@ -491,9 +495,12 @@ def update_alias(request):
     if len(alias) > 30:
         return JsonResponse({'code': 0, 'msg': _('别名不得超过30个字符。')})
     uid = str(request.user.id)
-    peer = RustDeskPeer.objects.filter(Q(uid=uid) & Q(rid=rid)).first()
+    if request.user.is_admin:
+        peer = RustDeskPeer.objects.filter(Q(rid=rid)).first()
+    else:
+        peer = RustDeskPeer.objects.filter(Q(uid=uid) & Q(rid=rid)).first()
     if not peer:
-        return JsonResponse({'code': 0, 'msg': _('设备不存在o sin permiso.')})
+        return JsonResponse({'code': 0, 'msg': _('设备不存在或无权限。')})
     peer.alias = alias
     peer.save(update_fields=['alias'])
     return JsonResponse({'code': 1, 'msg': _('别名已更新。')})

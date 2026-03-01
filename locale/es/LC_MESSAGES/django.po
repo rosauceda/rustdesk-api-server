@@ -579,5 +579,8 @@ msgstr "No hay datos."
 msgid "UNKNOWN"
 msgstr "DESCONOCIDO"
 
+msgid "未登录"
+msgstr "Sin usuario"
+
 #~ msgid "未知"
 #~ msgstr "UNKNOWN"
