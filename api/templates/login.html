@@ -44,7 +44,7 @@
             <button lay-submit lay-filter="login" class="layui-btn">{{ "登录" | translate }}</button>
         </div>
         <hr/>
-        <p><a href="/api/user_action?action=register" class="fl">{{ "立即注册" | translate }}</a><a href="javascript:;" class="fr">{{ "忘记密码？" | translate }}</a></p>
+        <p>{% if settings.ALLOW_REGISTRATION %}<a href="/api/user_action?action=register" class="fl">{{ "立即注册" | translate }}</a>{% endif %}<a href="javascript:;" class="fr">{{ "忘记密码？" | translate }}</a></p>
     </form>
 </div>
  

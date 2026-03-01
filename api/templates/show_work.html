@@ -42,7 +42,15 @@
                 </td>
                 <td>{{one.username}}</td>
                 <td>{{one.hostname}}</td>
-                <td>{{one.alias}}</td>
+                <td class="alias-cell" data-rid="{{ one.rid }}">
+                  <span class="alias-display">{{ one.alias }}</span>
+                  <button class="alias-edit-btn layui-btn layui-btn-xs layui-btn-primary" title="{{ '编辑别名' | translate }}">✏</button>
+                  <span class="alias-edit-form" style="display:none;">
+                    <input type="text" class="alias-input" value="{{ one.alias }}" maxlength="30">
+                    <button class="alias-save-btn layui-btn layui-btn-xs">✓</button>
+                    <button class="alias-cancel-btn layui-btn layui-btn-xs layui-btn-danger">✕</button>
+                  </span>
+                </td>
                 <td>{{one.platform}}</td>
                 <td>{{one.os}}</td>
                 <td>{{one.cpu}}</td>
@@ -161,4 +169,77 @@
   </div>
 </div>
 
+{% endblock %}
+
+{% block scripts %}
+<style>
+  .alias-cell { white-space: nowrap; }
+  .alias-edit-btn { margin-left: 4px; padding: 0 6px; opacity: 0.5; }
+  .alias-edit-btn:hover { opacity: 1; }
+  .alias-input { display: inline-block; width: 110px; height: 24px; padding: 0 4px;
+                 border: 1px solid #d2d2d2; border-radius: 2px; vertical-align: middle; }
+  .alias-save-btn, .alias-cancel-btn { padding: 0 6px; margin-left: 2px; }
+</style>
+<script>
+(function () {
+  function getCsrf() {
+    var m = document.cookie.match(/csrftoken=([^;]+)/);
+    return m ? m[1] : '';
+  }
+
+  document.querySelectorAll('.alias-edit-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var cell = btn.closest('.alias-cell');
+      cell.querySelector('.alias-display').style.display = 'none';
+      btn.style.display = 'none';
+      cell.querySelector('.alias-edit-form').style.display = '';
+      cell.querySelector('.alias-input').focus();
+    });
+  });
+
+  document.querySelectorAll('.alias-cancel-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var cell = btn.closest('.alias-cell');
+      cell.querySelector('.alias-display').style.display = '';
+      cell.querySelector('.alias-edit-btn').style.display = '';
+      cell.querySelector('.alias-edit-form').style.display = 'none';
+    });
+  });
+
+  document.querySelectorAll('.alias-save-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var cell = btn.closest('.alias-cell');
+      var rid = cell.dataset.rid;
+      var alias = cell.querySelector('.alias-input').value.trim();
+      fetch('/api/update_alias', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCsrf() },
+        body: JSON.stringify({ rid: rid, alias: alias })
+      })
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        if (data.code === 1) {
+          cell.querySelector('.alias-display').textContent = alias;
+        } else {
+          alert(data.msg);
+        }
+        cell.querySelector('.alias-display').style.display = '';
+        cell.querySelector('.alias-edit-btn').style.display = '';
+        cell.querySelector('.alias-edit-form').style.display = 'none';
+      })
+      .catch(function () { alert('Error al guardar.'); });
+    });
+  });
+
+  document.querySelectorAll('.alias-input').forEach(function (input) {
+    input.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') {
+        input.closest('.alias-cell').querySelector('.alias-save-btn').click();
+      } else if (e.key === 'Escape') {
+        input.closest('.alias-cell').querySelector('.alias-cancel-btn').click();
+      }
+    });
+  });
+}());
+</script>
 {% endblock %}

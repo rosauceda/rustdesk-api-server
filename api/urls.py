@@ -20,6 +20,7 @@ urlpatterns = [
     url(r'^sysinfo',views.sysinfo),
     url(r'^heartbeat',views.heartbeat),
     #url(r'^register',views.register), 
+    url(r'^update_alias$',views.update_alias),  # 前端
     url(r'^user_action',views.user_action),  # 前端
     url(r'^work',views.work),                # 前端
     url(r'^down_peers$',views.down_peers),   # 前端
