@@ -595,5 +595,11 @@ msgstr ""
 msgid "未登录"
 msgstr "No user"
 
+msgid "记住我"
+msgstr "Remember me"
+
+msgid "还没有账号？"
+msgstr "Don't have an account?"
+
 #~ msgid "未知"
 #~ msgstr "UNKNOWN"

@@ -4,87 +4,387 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
- 
-    <title>{{ "登录" | translate }}_【RustDeskWeb】</title>
-    <link rel="stylesheet" href="{% static 'layui/css/layui.css' %}">
-    <link rel="stylesheet" href="{% static 'layui/css/style.css' %}">
-    <link rel="stylesheet" href="{% static 'layui/css/app-ui.css' %}">
-    <link rel="icon" type="image/svg+xml" href="{% static 'web_client/favicon.svg' %}">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ "登录" | translate }} — RustDesk Console</title>
+  <link rel="icon" type="image/svg+xml" href="{% static 'web_client/favicon.svg' %}">
+  <script src="{% static 'layui/layui.js' %}"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
- 
+    body {
+      background: #0d0d0d;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+    }
+
+    /* ── Top-right language selector ── */
+    .topbar {
+      position: fixed;
+      top: 16px;
+      right: 20px;
+    }
+    .topbar select {
+      background: #1a1a1a;
+      color: #888;
+      border: 1px solid #2a2a2a;
+      border-radius: 8px;
+      padding: 5px 10px;
+      font-size: 13px;
+      cursor: pointer;
+      outline: none;
+      transition: border-color .2s;
+    }
+    .topbar select:hover { border-color: #444; }
+
+    /* ── Card ── */
+    .card {
+      width: 100%;
+      max-width: 420px;
+      padding: 52px 44px 44px;
+      text-align: center;
+    }
+
+    /* ── Logo + headings ── */
+    .logo-wrap { margin-bottom: 14px; }
+    .logo-wrap img { width: 68px; height: 68px; }
+
+    h1 {
+      font-size: 30px;
+      font-weight: 700;
+      letter-spacing: .4px;
+      color: #ffffff;
+    }
+    .subtitle {
+      margin-top: 5px;
+      margin-bottom: 36px;
+      color: #555;
+      font-size: 13px;
+      letter-spacing: .3px;
+    }
+
+    /* ── Input groups ── */
+    .input-group {
+      position: relative;
+      margin-bottom: 14px;
+      text-align: left;
+    }
+    .input-group .ico {
+      position: absolute;
+      left: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #4a4a4a;
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+    }
+    .input-group input {
+      width: 100%;
+      background: #161616;
+      border: 1px solid #252525;
+      border-radius: 10px;
+      color: #ddd;
+      font-size: 15px;
+      padding: 13px 42px;
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .input-group input:focus {
+      border-color: #1677ff;
+      box-shadow: 0 0 0 3px rgba(22,119,255,.15);
+    }
+    .input-group input::placeholder { color: #3a3a3a; }
+
+    .btn-side {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #444;
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      transition: color .15s;
+    }
+    .btn-side:hover { color: #888; }
+
+    #btn-clear { display: none; }
+
+    /* ── Row: remember me + forgot ── */
+    .row-extra {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 6px 0 26px;
+      font-size: 13px;
+    }
+    .remember {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      color: #666;
+      cursor: pointer;
+      user-select: none;
+    }
+    .remember input[type=checkbox] {
+      accent-color: #1677ff;
+      width: 14px;
+      height: 14px;
+      cursor: pointer;
+    }
+    .btn-forgot {
+      background: none;
+      border: none;
+      padding: 0;
+      color: #1677ff;
+      font-size: 13px;
+      cursor: pointer;
+      transition: color .15s;
+    }
+    .btn-forgot:hover { color: #4096ff; }
+
+    /* ── Login button ── */
+    .btn-login {
+      width: 100%;
+      padding: 13px;
+      background: #1677ff;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      letter-spacing: .4px;
+      transition: background .2s, transform .1s;
+    }
+    .btn-login:hover { background: #4096ff; }
+    .btn-login:active { transform: scale(.99); }
+    .btn-login:disabled { opacity: .55; cursor: not-allowed; }
+
+    /* ── Register link ── */
+    .register-row {
+      margin-top: 22px;
+      font-size: 13px;
+      color: #444;
+    }
+    .register-row a { color: #1677ff; text-decoration: none; }
+    .register-row a:hover { color: #4096ff; }
+
+    /* ── Toast ── */
+    .toast {
+      position: fixed;
+      top: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-12px);
+      background: #2a1215;
+      border: 1px solid #5c2326;
+      color: #ff7875;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .25s, transform .25s;
+      white-space: nowrap;
+      z-index: 999;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+  </style>
 </head>
-<body class="auth-body">
+
+<body>
 {% get_current_language as LANGUAGE_CODE %}
-<div class="auth-topbar">
-    <form action="/i18n/setlang/" method="post" style="display:inline-block;">
-        {% csrf_token %}
-        <input type="hidden" name="next" value="{{ request.get_full_path }}">
-        <select name="language" onchange="this.form.submit()">
-            <option value="zh-hans" {% if LANGUAGE_CODE == 'zh-hans' %}selected{% endif %}>中文</option>
-            <option value="en" {% if LANGUAGE_CODE == 'en' %}selected{% endif %}>English</option>
-            <option value="es" {% if LANGUAGE_CODE == 'es' %}selected{% endif %}>Español</option>
-        </select>
-    </form>
-</div>
- 
-<div class="login-main">
-    <header class="layui-elip">{{ "登录" | translate }}</header>
-    <form class="layui-form">
-        {% csrf_token %}
-        <div class="layui-input-inline">
-            <input type="text" name="account" required lay-verify="required" placeholder="{{ "用户名" | translate }}" autocomplete="off"
-                   class="layui-input">
-        </div>
-        <div class="layui-input-inline">
-            <input type="password" name="password" required lay-verify="required" placeholder="{{ "密码" | translate }}" autocomplete="off"
-                   class="layui-input">
-        </div>
-        <div class="layui-input-inline login-btn">
-            <button lay-submit lay-filter="login" class="layui-btn">{{ "登录" | translate }}</button>
-        </div>
-        <hr/>
-        <p>{% if settings.ALLOW_REGISTRATION %}<a href="/api/user_action?action=register" class="fl">{{ "立即注册" | translate }}</a>{% endif %}<a href="javascript:;" class="fr">{{ "忘记密码？" | translate }}</a></p>
-    </form>
-</div>
- 
- 
-<script src={% static "layui/layui.js" %}></script>
-<script type="text/javascript">
-    layui.use(['form','layer','jquery'], function () {
- 
-        // 操作对象
-        var form = layui.form;
-        var $ = layui.jquery;
-        form.on('submit(login)',function (data) {
-            var payload = data.field || {};
-            payload.csrfmiddlewaretoken = $('input[name=csrfmiddlewaretoken]').val();
-            $.ajax({
-                url:'/api/user_action?action=login',
-                data:payload,
-                dataType:'json',
-                type:'post',
-                headers:{
-                    'X-CSRFToken': payload.csrfmiddlewaretoken
-                },
 
-                success: function(resp) {
-		    			if(resp.code==1) {
-		    				//layer.alert(resp.msg,{icon:1});
-                            location.href = resp.url;
-		    			} else {
-		    				layer.alert(resp.msg,{icon:5});
-		    			}
-                }
-            })
-            return false;
-        })
-        $('.fr').on('click', function(){
-            layer.alert("{{ "这么简易的东西，忘记密码这功能就没必要了吧。" | translate }}",{icon:5});
-        })
+<!-- Language selector -->
+<div class="topbar">
+  <form action="/i18n/setlang/" method="post">
+    {% csrf_token %}
+    <input type="hidden" name="next" value="{{ request.get_full_path }}">
+    <select name="language" onchange="this.form.submit()">
+      <option value="zh-hans" {% if LANGUAGE_CODE == 'zh-hans' %}selected{% endif %}>中文</option>
+      <option value="en"      {% if LANGUAGE_CODE == 'en'      %}selected{% endif %}>English</option>
+      <option value="es"      {% if LANGUAGE_CODE == 'es'      %}selected{% endif %}>Español</option>
+    </select>
+  </form>
+</div>
 
- 
+<!-- Error toast -->
+<div class="toast" id="toast"></div>
+
+<!-- Card -->
+<div class="card">
+
+  <!-- Logo -->
+  <div class="logo-wrap">
+    <img src="{% static 'web_client/favicon.svg' %}" alt="RustDesk">
+  </div>
+  <h1>RustDesk</h1>
+  <p class="subtitle">RustDesk Console</p>
+
+  <form id="login-form">
+    {% csrf_token %}
+
+    <!-- Username -->
+    <div class="input-group">
+      <span class="ico">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+      </span>
+      <input id="inp-user" type="text" name="account"
+             placeholder="{{ '用户名' | translate }}" autocomplete="off">
+      <button type="button" class="btn-side" id="btn-clear" onclick="clearUser()" title="clear">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Password -->
+    <div class="input-group">
+      <span class="ico">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+        </svg>
+      </span>
+      <input id="inp-pwd" type="password" name="password"
+             placeholder="{{ '密码' | translate }}" autocomplete="off">
+      <button type="button" class="btn-side" id="btn-eye" onclick="togglePwd()" title="show/hide">
+        <svg id="ico-eye" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+          <circle cx="12" cy="12" r="3"/>
+        </svg>
+        <svg id="ico-eye-off" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none">
+          <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+          <line x1="1" y1="1" x2="23" y2="23"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Remember me + forgot -->
+    <div class="row-extra">
+      <label class="remember">
+        <input type="checkbox" id="remember-me">
+        {{ "记住我" | translate }}
+      </label>
+      <button type="button" class="btn-forgot" id="btn-forgot">
+        {{ "忘记密码？" | translate }}
+      </button>
+    </div>
+
+    <!-- Submit -->
+    <button type="submit" class="btn-login" id="btn-login">
+      {{ "登录" | translate }}
+    </button>
+  </form>
+
+  {% if settings.ALLOW_REGISTRATION %}
+  <p class="register-row">
+    {{ "还没有账号？" | translate }}
+    <a href="/api/user_action?action=register">{{ "立即注册" | translate }}</a>
+  </p>
+  {% endif %}
+
+</div>
+
+<script>
+(function () {
+  var inpUser = document.getElementById('inp-user');
+  var btnClear = document.getElementById('btn-clear');
+
+  /* Show/hide clear button */
+  inpUser.addEventListener('input', function () {
+    btnClear.style.display = this.value ? 'flex' : 'none';
+  });
+
+  window.clearUser = function () {
+    inpUser.value = '';
+    btnClear.style.display = 'none';
+    inpUser.focus();
+  };
+
+  /* Toggle password visibility */
+  window.togglePwd = function () {
+    var inp = document.getElementById('inp-pwd');
+    var on  = document.getElementById('ico-eye');
+    var off = document.getElementById('ico-eye-off');
+    if (inp.type === 'password') {
+      inp.type = 'text';
+      on.style.display  = 'none';
+      off.style.display = 'block';
+    } else {
+      inp.type = 'password';
+      on.style.display  = 'block';
+      off.style.display = 'none';
+    }
+  };
+
+  /* Toast */
+  function showToast(msg) {
+    var t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(function () { t.classList.remove('show'); }, 3500);
+  }
+
+  /* Forgot password */
+  document.getElementById('btn-forgot').addEventListener('click', function () {
+    showToast("{{ '这么简易的东西，忘记密码这功能就没必要了吧。' | translate }}");
+  });
+
+  /* Login submit */
+  document.getElementById('login-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var account  = inpUser.value.trim();
+    var password = document.getElementById('inp-pwd').value;
+    var csrf     = document.querySelector('input[name=csrfmiddlewaretoken]').value;
+    var btn      = document.getElementById('btn-login');
+
+    if (!account || !password) {
+      showToast("{{ '帐号或密码错误！' | translate }}");
+      return;
+    }
+
+    btn.disabled = true;
+
+    fetch('/api/user_action?action=login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'X-CSRFToken': csrf
+      },
+      body: 'account=' + encodeURIComponent(account)
+          + '&password=' + encodeURIComponent(password)
+          + '&csrfmiddlewaretoken=' + encodeURIComponent(csrf)
+    })
+    .then(function (r) { return r.json(); })
+    .then(function (resp) {
+      if (resp.code === 1) {
+        location.href = resp.url;
+      } else {
+        showToast(resp.msg);
+        btn.disabled = false;
+      }
+    })
+    .catch(function () {
+      showToast('Network error');
+      btn.disabled = false;
     });
+  });
+}());
 </script>
 </body>
 </html>

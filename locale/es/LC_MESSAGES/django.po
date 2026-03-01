@@ -582,5 +582,11 @@ msgstr "DESCONOCIDO"
 msgid "未登录"
 msgstr "Sin usuario"
 
+msgid "记住我"
+msgstr "Recuérdame"
+
+msgid "还没有账号？"
+msgstr "¿No tienes cuenta?"
+
 #~ msgid "未知"
 #~ msgstr "UNKNOWN"
