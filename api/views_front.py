@@ -161,9 +161,11 @@ def user_login(request):
 
 def user_register(request):
     info = ''
-    if request.method == 'GET':
-        return render(request, 'reg.html')
     ALLOW_REGISTRATION = settings.ALLOW_REGISTRATION
+    if request.method == 'GET':
+        if not ALLOW_REGISTRATION:
+            return HttpResponseRedirect('/api/user_action?action=login')
+        return render(request, 'reg.html')
     result = {
         'code': 0,
         'msg': ''
@@ -472,6 +474,29 @@ def get_file_log():
         new_ordered_dict[key] = alog
 
     return [v for k, v in new_ordered_dict.items()]
+
+
+@login_required(login_url='/api/user_action?action=login')
+def update_alias(request):
+    if request.method != 'POST':
+        return JsonResponse({'code': 0, 'msg': _('请求方式错误！')})
+    try:
+        data = json.loads(request.body.decode())
+    except Exception:
+        return JsonResponse({'code': 0, 'msg': _('数据格式错误。')})
+    rid = data.get('rid', '').strip()
+    alias = data.get('alias', '').strip()
+    if not rid:
+        return JsonResponse({'code': 0, 'msg': _('缺少设备ID。')})
+    if len(alias) > 30:
+        return JsonResponse({'code': 0, 'msg': _('别名不得超过30个字符。')})
+    uid = str(request.user.id)
+    peer = RustDeskPeer.objects.filter(Q(uid=uid) & Q(rid=rid)).first()
+    if not peer:
+        return JsonResponse({'code': 0, 'msg': _('设备不存在o sin permiso.')})
+    peer.alias = alias
+    peer.save(update_fields=['alias'])
+    return JsonResponse({'code': 1, 'msg': _('别名已更新。')})
 
 
 @login_required(login_url='/api/user_action?action=login')
